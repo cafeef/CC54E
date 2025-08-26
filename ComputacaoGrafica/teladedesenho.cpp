@@ -30,11 +30,14 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
     // 1. Percorre a lista de todos os objetos virtuais
     for (const ObjetoVirtual &objeto : displayFile) {
 
+        // Define a cor da caneta com base na cor guardada no objeto
+        caneta.setColor(objeto.cor);
+        painter.setPen(caneta); // Aplica a caneta (com a cor certa) ao pintor
+
         // 2. Verifica o tipo de cada objeto para saber como desenhá-lo
         switch (objeto.tipo) {
 
         case TipoObjeto::Ponto: {
-            caneta.setColor(Qt::green);
             // Apenas desenha se a lista de pontos não estiver vazia
             if (!objeto.pontos.isEmpty()) {
                 painter.drawPoint(objeto.pontos.first());
@@ -43,7 +46,6 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         }
 
         case TipoObjeto::Reta: {
-            caneta.setColor(Qt::blue);
             // Apenas desenha se tivermos exatamente 2 pontos (início e fim)
             if (objeto.pontos.size() == 2) {
                 painter.drawLine(objeto.pontos[0], objeto.pontos[1]);

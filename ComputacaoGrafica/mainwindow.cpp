@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     pontoA.nome = "Ponto Central";
     pontoA.tipo = TipoObjeto::Ponto;
     pontoA.pontos.append(QPointF(400.0, 300.0)); // Um ponto só tem uma coordenada
+    pontoA.cor = Qt::green;
 
     // 3. Criar uma Reta
     ObjetoVirtual reta1;
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     reta1.tipo = TipoObjeto::Reta;
     reta1.pontos.append(QPointF(50.0, 50.0));   // Ponto inicial
     reta1.pontos.append(QPointF(200.0, 200.0)); // Ponto final
+    reta1.cor = Qt::blue;
 
     // 4. Criar um Polígono (Triângulo)
     ObjetoVirtual triangulo1;
@@ -33,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     triangulo1.pontos.append(QPointF(250.0, 250.0)); // Vértice 1
     triangulo1.pontos.append(QPointF(350.0, 250.0)); // Vértice 2
     triangulo1.pontos.append(QPointF(300.0, 350.0)); // Vértice 3
+    triangulo1.cor = Qt::red;
 
     // 4. Criar um Polígono (Triângulo)
     ObjetoVirtual coracao;
@@ -52,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     coracao.pontos.append(QPointF(656, 390));
     coracao.pontos.append(QPointF(535, 456));
     coracao.pontos.append(QPointF(398, 503));
+    coracao.cor = Qt::red;
 
     // 5. Adicionar os objetos ao Display File
     displayFile.append(pontoA);

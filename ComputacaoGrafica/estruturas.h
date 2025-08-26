@@ -7,6 +7,7 @@
 #include <QString>   // Para usar strings do Qt (nomes dos objetos)
 #include <QVector>   // Para usar listas/vetores do Qt (lista de pontos)
 #include <QPointF>   // Para representar um ponto (x, y) com precisão float
+#include <QColor> //Representar a cor de um objeto
 
 /**
  * @brief Define os tipos de objetos geométricos que podemos desenhar.
@@ -26,6 +27,7 @@ struct ObjetoVirtual {
     QString nome;         // Nome do objeto, ex: "Triângulo 1"
     TipoObjeto tipo;      // O tipo do objeto (Ponto, Reta ou Poligono)
     QVector<QPointF> pontos; // Lista de pontos que definem a geometria do objeto
+    QColor cor; //cor do objeto
 };
 
 // O nosso "Display File" será simplesmente um vetor destes objetos.
