@@ -34,10 +34,29 @@ MainWindow::MainWindow(QWidget *parent)
     triangulo1.pontos.append(QPointF(350.0, 250.0)); // Vértice 2
     triangulo1.pontos.append(QPointF(300.0, 350.0)); // Vértice 3
 
+    // 4. Criar um Polígono (Triângulo)
+    ObjetoVirtual coracao;
+    coracao.nome = "Coração de Teste";
+    coracao.tipo = TipoObjeto::Poligono;
+    coracao.pontos.append(QPointF(398, 503));
+    coracao.pontos.append(QPointF(262, 455));
+    coracao.pontos.append(QPointF(140.0, 389.0));
+    coracao.pontos.append(QPointF(44, 244));
+    coracao.pontos.append(QPointF(119, 101));
+    coracao.pontos.append(QPointF(266.0, 94.0));
+    coracao.pontos.append(QPointF(398, 145));
+    coracao.pontos.append(QPointF(531, 94));
+    coracao.pontos.append(QPointF(678, 101));
+    coracao.pontos.append(QPointF(760, 189));
+    coracao.pontos.append(QPointF(744, 300));
+    coracao.pontos.append(QPointF(656, 390));
+    coracao.pontos.append(QPointF(535, 456));
+    coracao.pontos.append(QPointF(398, 503));
+
     // 5. Adicionar os objetos ao Display File
     displayFile.append(pontoA);
     displayFile.append(reta1);
-    displayFile.append(triangulo1);
+    displayFile.append(coracao);
 
     ui->TelaDesenho->setDisplayFile(displayFile);
 

@@ -34,6 +34,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         switch (objeto.tipo) {
 
         case TipoObjeto::Ponto: {
+            caneta.setColor(Qt::green);
             // Apenas desenha se a lista de pontos não estiver vazia
             if (!objeto.pontos.isEmpty()) {
                 painter.drawPoint(objeto.pontos.first());
@@ -42,6 +43,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         }
 
         case TipoObjeto::Reta: {
+            caneta.setColor(Qt::blue);
             // Apenas desenha se tivermos exatamente 2 pontos (início e fim)
             if (objeto.pontos.size() == 2) {
                 painter.drawLine(objeto.pontos[0], objeto.pontos[1]);
