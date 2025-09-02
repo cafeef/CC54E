@@ -5,7 +5,6 @@
 #pragma once // Garante que este ficheiro só é incluído uma vez pelo compilador
 
 #include <QString>   // Para usar strings do Qt (nomes dos objetos)
-#include <QVector>   // Para usar listas/vetores do Qt (lista de pontos)
 #include <QPointF>   // Para representar um ponto (x, y) com precisão float
 #include <QColor> //Representar a cor de um objeto
 
@@ -20,13 +19,42 @@ enum class TipoObjeto {
 };
 
 /**
+ * @brief Classe que representa cada ponto como uma matriz, futuramente pode ter as transformações geométricas.
+ */
+
+class PontoMatriz {
+public:
+    //matriz de cada ponto
+    double ponto[2][1];
+
+    // Construtor para facilitar a criação de pontos
+    PontoMatriz(double x_inicial, double y_inicial) {
+        ponto[0][0] = x_inicial;
+        ponto[1][0] = y_inicial;
+    }
+
+
+    //metodos para ler a coordenada x ou y de uma matriz
+    double x() {
+        return ponto[0][0];
+    }
+
+    double y() {
+        return ponto[1][0];
+    }
+};
+
+/**
  * @brief Estrutura que representa um único objeto virtual a ser desenhado.
  * Contém todas as informações necessárias: nome, tipo e os pontos que o definem.
  */
-struct ObjetoVirtual {
-    QString nome;         // Nome do objeto, ex: "Triângulo 1"
-    TipoObjeto tipo;      // O tipo do objeto (Ponto, Reta ou Poligono)
-    QVector<QPointF> pontos; // Lista de pontos que definem a geometria do objeto
+
+class ObjetoVirtual {
+public:
+    //atributos da classe objeto: nome, tipo e coordenadas
+    QString nome; //Nome do objeto
+    TipoObjeto tipo; //tipo do objeto
+    QVector <PontoMatriz> pontos; //um vetor de classe PontoMatriz para representar todos os pontos
     QColor cor; //cor do objeto
 };
 
