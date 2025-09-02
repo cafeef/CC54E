@@ -25,21 +25,22 @@ enum class TipoObjeto {
 class PontoMatriz {
 public:
     //matriz de cada ponto
-    double ponto[2][1];
+    double ponto[3][1];
 
     // Construtor para facilitar a criação de pontos
     PontoMatriz(double x_inicial, double y_inicial) {
         ponto[0][0] = x_inicial;
         ponto[1][0] = y_inicial;
+        ponto[2][0] = 1;
     }
 
 
     //metodos para ler a coordenada x ou y de uma matriz
-    double x() {
+    double x() const {
         return ponto[0][0];
     }
 
-    double y() {
+    double y() const {
         return ponto[1][0];
     }
 };

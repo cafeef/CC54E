@@ -40,7 +40,10 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         case TipoObjeto::Ponto: {
             // Apenas desenha se a lista de pontos não estiver vazia
             if (!objeto.pontos.isEmpty()) {
-                painter.drawPoint(objeto.pontos.first());
+                //pegando o primeiro ponto
+                PontoMatriz ponto = objeto.pontos.first();
+                //criando um QPointF pelo ponto e desenhando
+                painter.drawPoint(QPointF(ponto.x(), ponto.y()));
             }
             break;
         }
@@ -48,16 +51,26 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         case TipoObjeto::Reta: {
             // Apenas desenha se tivermos exatamente 2 pontos (início e fim)
             if (objeto.pontos.size() == 2) {
-                painter.drawLine(objeto.pontos[0], objeto.pontos[1]);
+                PontoMatriz pontos[2] = {objeto.pontos[0], objeto.pontos[1]};
+                painter.drawLine(QPointF(pontos[0].x(), pontos[0].y()), QPointF(pontos[1].x(), pontos[1].y()));
             }
             break;
         }
 
         case TipoObjeto::Poligono: {
-            // Apenas desenha se tivermos 3 ou mais pontos para formar um polígono
-            // O QPainter.drawPolygon já sabe como conectar os pontos!
+            // Apenas desenha se tivermos 3 ou mais pontos
             if (objeto.pontos.size() >= 3) {
-                painter.drawPolygon(objeto.pontos);
+
+                // 1. Cria a lista temporária para os pontos convertidos
+                QVector<QPointF> pontosParaPintar;
+
+                // 2. Loop que enche a lista temporária
+                for (const PontoMatriz &ponto : objeto.pontos) {
+                    pontosParaPintar.append(QPointF(ponto.x(), ponto.y()));
+                }
+
+                // 3. Chama a função de desenho uma única vez com a lista completa
+                painter.drawPolygon(pontosParaPintar);
             }
             break;
         }

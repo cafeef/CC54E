@@ -24,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 0; i < coordenadas.size(); i += 2) {
         pontoA.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
     }
+    for (int i = 0; i < pontoA.pontos.size(); i++) {
+        printf("x: %.2f\ny: %.2f", pontoA.pontos[i].x(), pontoA.pontos[i].y());
+    }
     pontoA.cor = Qt::green;
 
     // 3. Criar uma Reta
