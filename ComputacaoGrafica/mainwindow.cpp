@@ -21,12 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
     pontoA.nome = "Ponto Central";
     pontoA.tipo = TipoObjeto::Ponto;
     coordenadas = {400, 300};
+
+    //adicionando em pontos cada matriz de coordenada
     for (int i = 0; i < coordenadas.size(); i += 2) {
         pontoA.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
     }
-    for (int i = 0; i < pontoA.pontos.size(); i++) {
-        printf("x: %.2f\ny: %.2f", pontoA.pontos[i].x(), pontoA.pontos[i].y());
-    }
+
     pontoA.cor = Qt::green;
 
     // 3. Criar uma Reta
@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     reta1.tipo = TipoObjeto::Reta;
     coordenadas.clear(); //limpando a lista para receber as próximas coordenadas do desenho
     coordenadas = {50.0, 50.0, 200.0, 200.0};
+
+    //adicionando em pontos cada matriz de coordenada
     for (int i = 0; i < coordenadas.size(); i += 2) {
         reta1.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
     }
@@ -45,13 +47,16 @@ MainWindow::MainWindow(QWidget *parent)
     triangulo1.nome = "Triângulo de Teste";
     triangulo1.tipo = TipoObjeto::Poligono;
     coordenadas.clear(); //limpando a lista para receber as próximas coordenadas do desenho
-    coordenadas = {250.0, 250.0, 350.0, 250.0, 300.0, 350.0};
+    coordenadas = {250.0, 250.0, 350.0, 250.0, 300.0, 350.0}; //coordenadas de desenho
+
+    //adicionando em pontos cada matriz de coordenada
+
     for (int i = 0; i < coordenadas.size(); i += 2) {
         triangulo1.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
     }
     triangulo1.cor = Qt::red;
 
-    // 4. Criar um Polígono (Triângulo)
+    // 4. Criar um Polígono
     ObjetoVirtual coracao;
     coracao.nome = "Coração de Teste";
     coracao.tipo = TipoObjeto::Poligono;
@@ -72,6 +77,8 @@ MainWindow::MainWindow(QWidget *parent)
         535.0, 456.0,
         398.0, 503.0
     };
+
+    //adicionando em pontos cada matriz de coordenada
     for (int i = 0; i < coordenadas.size(); i += 2) {
         coracao.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
     }
