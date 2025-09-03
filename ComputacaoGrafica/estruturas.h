@@ -43,6 +43,29 @@ public:
     double y() const {
         return ponto[1][0];
     }
+
+    //método de translação, recebendo como parametro a matriz e o vetor, utilizando a função de mult.
+    void translacao(const QVector<QVector<double>> &matriz, const QVector<double> &valores){
+        int linhas = matriz.size();
+
+        //inicializa a matriz identidade com zeros
+        QVector<QVector<double>> identidade(linhas, QVector<double>(linhas, 0));
+
+        for(int i = 0; i < linhas; i++){
+            for(int j = 0; j < linhas; j++){
+                if(j == i){
+                    //monta a coluna principal com 1
+                    identidade[i][j] = 1;
+                } else if(j == (linhas - 1)){ // se estiver na última coluna, coloca o valor do fator de deslocamento
+                    identidade[i][j] = valores[i];
+                } else { // completa o restante com zero
+                    identidade[i][j] = 0;
+                }
+            }
+        }
+        // multiplicação
+        QVector<QVector<double>> = multiplicacao(identidade, matriz);
+    }
 };
 
 /**
