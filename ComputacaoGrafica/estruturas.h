@@ -7,6 +7,7 @@
 #include <QString>   // Para usar strings do Qt (nomes dos objetos)
 #include <QPointF>   // Para representar um ponto (x, y) com precisão float
 #include <QColor> //Representar a cor de um objeto
+#include <cmath>  // para sin, cos
 
 /**
  * @brief Define os tipos de objetos geométricos que podemos desenhar.
@@ -64,8 +65,32 @@ public:
             }
         }
         // multiplicação
-        QVector<QVector<double>> = multiplicacao(identidade, matriz);
+        QVector<QVector<double>> resultado = multiplicacao(identidade, matriz);
     }
+
+    void rotacao(const QVector<QVector<double>> &matriz, double angulo) {
+        int linhas = 3; //limitado a 2D, ou seja matriz 3x3
+
+        // inicializa a matriz com zero
+        QVector<QVector<double>> identidade(linhas, QVector<double>(linhas, 0));
+
+        // preenchendo matriz para a rotação
+        identidade[0][0] = cos(angulo);
+        identidade[0][1] = -sin(angulo);
+        identidade[0][2] = 0;
+
+        identidade[1][0] = sin(angulo);
+        identidade[1][1] = cos(angulo);
+        identidade[1][2] = 0;
+
+        identidade[2][0] = 0;
+        identidade[2][1] = 0;
+        identidade[2][2] = 1;
+
+        // multiplica matriz de rotação pelos pontos
+        QVector<QVector<double>> resultado = multiplicacao(identidade, matriz);
+    }
+
 };
 
 /**
