@@ -8,6 +8,7 @@
 #include <QPointF>   // Para representar um ponto (x, y) com precisão float
 #include <QColor> //Representar a cor de um objeto
 #include <cmath>  // para sin, cos
+#include <QDebug>
 
 /**
  * @brief Define os tipos de objetos geométricos que podemos desenhar.
@@ -43,6 +44,49 @@ public:
 
     double y() const {
         return ponto[1][0];
+    }
+
+    //metodo para multiplicacao de matrizes, reconhece o tamanho da matriz e faz a multiplicação
+    QVector<QVector<double>> multiplicacao(const QVector<QVector<double>>& A, const QVector<QVector<double>>& B) {
+
+        if (A.isEmpty() || B.isEmpty()){
+            return {};
+        }
+
+        else {
+
+            int colunasA = A[0].size();
+            int linhasB = B.size();
+
+
+            if (colunasA == linhasB){
+                QVector<QVector<double>> R;
+
+                printf("Multiplicação autorizada.");
+
+                int linhasA = A.size();
+                int colunasB = B[0].size();
+
+                // Inicializa matriz resultado (linhasA x colunasB) com zeros
+                R = QVector<QVector<double>>(linhasA, QVector<double>(colunasB, 0));
+
+                for (int i = 0; i < linhasA; i++) {
+                    for (int j = 0; j < colunasB; j++) {
+                        for (int k = 0; k < colunasA; k++) {
+                            R[i][j] += A[i][k] * B[k][j];
+                        }
+                    }
+                }
+
+                return R;
+            }
+
+            else{
+                return {};
+            }
+
+        }
+
     }
 
     //método de translação, recebendo como parametro a matriz e o vetor, utilizando a função de mult.
