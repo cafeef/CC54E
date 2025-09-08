@@ -6,14 +6,12 @@ TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent)
     // Define um fundo branco para a nossa área de desenho
     setAutoFillBackground(true);
     QPalette pal = palette();
-    pal.setColor(QPalette::Window, Qt::white);
+    pal.setColor(QPalette::Window, Qt::black);
     setPalette(pal);
 }
 
-void TelaDeDesenho::setDisplayFile(const QVector<ObjetoVirtual> &df)
-{
-    this->displayFile = df; // Copia a lista de objetos recebida
-    update(); // Força o widget a redesenhar-se, chamando o paintEvent()
+void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *df_ptr) {
+    this->displayFile_ptr = df_ptr; // Guarda o ponteiro
 }
 
 void TelaDeDesenho::paintEvent(QPaintEvent *event)
@@ -28,7 +26,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
     painter.setPen(caneta);
 
     // 1. Percorre a lista de todos os objetos virtuais
-    for (const ObjetoVirtual &objeto : displayFile) {
+    for (const ObjetoVirtual &objeto : *displayFile_ptr) {
 
         // Define a cor da caneta com base na cor guardada no objeto
         caneta.setColor(objeto.cor);

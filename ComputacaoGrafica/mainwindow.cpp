@@ -10,9 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     // --- Exemplo de criação de objetos ---
 
-    // 1. Declarar o nosso Display File (pode ser uma variável membro da classe MainWindow)
-    QVector<ObjetoVirtual> displayFile;
-
     //declaração de coordenadas, uma lista de pontos que um desenho tem. vai servir para atribuir a matriz em PontoMatriz
     QList<double> coordenadas;
 
@@ -56,40 +53,19 @@ MainWindow::MainWindow(QWidget *parent)
     }
     triangulo1.cor = Qt::red;
 
-    // 4. Criar um Polígono
-    ObjetoVirtual coracao;
-    coracao.nome = "Coração de Teste";
-    coracao.tipo = TipoObjeto::Poligono;
-    coordenadas.clear();
-    coordenadas = {
-        398.0, 503.0,
-        262.0, 455.0,
-        140.0, 389.0,
-        44.0, 244.0,
-        119.0, 101.0,
-        266.0, 94.0,
-        398.0, 145.0,
-        531.0, 94.0,
-        678.0, 101.0,
-        760.0, 189.0,
-        744.0, 300.0,
-        656.0, 390.0,
-        535.0, 456.0,
-        398.0, 503.0
-    };
-
-    //adicionando em pontos cada matriz de coordenada
-    for (int i = 0; i < coordenadas.size(); i += 2) {
-        coracao.pontos.append(PontoMatriz(coordenadas[i], coordenadas[i + 1]));
-    }
-    coracao.cor = Qt::red;
 
     // 5. Adicionar os objetos ao Display File
     displayFile.append(pontoA);
     displayFile.append(reta1);
-    displayFile.append(coracao);
+    displayFile.append(triangulo1);
 
-    ui->TelaDesenho->setDisplayFile(displayFile);
+    ui->TelaDesenho->setDisplayFile(&displayFile);
+
+
+    //Percorrendo o displayFile para adicionar os objetos no combobox (seleção de objetos a serem alterados)
+    for (int i = 0; i < displayFile.size(); i++) {
+        ui->objectSelectorComboBox->addItem(displayFile[i].nome);
+    }
 
 }
 
@@ -97,3 +73,99 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_translateButton_clicked()
+{
+    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
+    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    double dx, dy;
+    dx = ui->translateXSpinBox->value();
+    dy = ui->translateYSpinBox->value();
+    QVector <double> valores = {dx, dy};
+    for(int i = 0; i < objetoSelecionado.pontos.size(); i++) {
+        objetoSelecionado.pontos[i].ponto = this->translacao(objetoSelecionado.pontos[i].ponto, valores);
+    }
+    ui->TelaDesenho->update();
+
+}
+
+//método de translação, recebendo como parametro a matriz e o vetor, utilizando a função de mult.
+QVector<QVector<double>> MainWindow::translacao(const QVector<QVector<double>> &matriz, const QVector<double> &valores){
+    int linhas = matriz.size();
+
+    //inicializa a matriz identidade com zeros
+    QVector<QVector<double>> identidade(linhas, QVector<double>(linhas, 0));
+
+    for(int i = 0; i < linhas; i++){
+        for(int j = 0; j < linhas; j++){
+            if(j == i){
+                //monta a coluna principal com 1
+                identidade[i][j] = 1;
+            } else if(j == (linhas - 1)){ // se estiver na última coluna, coloca o valor do fator de deslocamento
+                identidade[i][j] = valores[i];
+            } else { // completa o restante com zero
+                identidade[i][j] = 0;
+            }
+        }
+    }
+    // multiplicação
+    QVector<QVector<double>> resultado = multiplicacao(identidade, matriz);
+    return resultado;
+}
+
+QVector<QVector<double>> MainWindow::rotacao(const QVector<QVector<double>> &matriz, double angulo) {
+    int linhas = 3; //limitado a 2D, ou seja matriz 3x3
+
+    // inicializa a matriz com zero
+    QVector<QVector<double>> identidade(linhas, QVector<double>(linhas, 0));
+
+    // preenchendo matriz para a rotação
+    identidade[0][0] = cos(angulo);
+    identidade[0][1] = -sin(angulo);
+    identidade[0][2] = 0;
+
+    identidade[1][0] = sin(angulo);
+    identidade[1][1] = cos(angulo);
+    identidade[1][2] = 0;
+
+    identidade[2][0] = 0;
+    identidade[2][1] = 0;
+    identidade[2][2] = 1;
+
+    // multiplica matriz de rotação pelos pontos
+    QVector<QVector<double>> resultado = multiplicacao(identidade, matriz);
+    return resultado;
+}
+
+
+QVector<QVector<double>> MainWindow:: escalonar(double sx, double sy, const QVector<QVector<double>>& B) {
+    QVector<QVector<double>> matrizEscala = {
+        {sx, 0, 0},
+        {0, sy, 0},
+        {0, 0, 1}
+    };
+
+    QVector<QVector<double>> resultado = multiplicacao(matrizEscala, B);
+    return resultado;
+}
+
+void MainWindow::on_escaleButton_clicked()
+{
+    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
+    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    double sx, sy;
+    sx = ui->escaleXSpinBox->value();
+    sy = ui->escaleYSpinBox->value();
+    for(int i = 0; i < objetoSelecionado.pontos.size(); i++) {
+        PontoMatriz &ponto_original = objetoSelecionado.pontos[i];
+
+        // Chama a sua função de escalar
+        QVector<QVector<double>> ponto_novo_matriz = this->escalonar(sx, sy, ponto_original.ponto);
+
+        // Atualiza o ponto do objeto com o novo resultado
+        ponto_original.ponto = ponto_novo_matriz;
+
+    }
+    ui->TelaDesenho->update();
+}
+

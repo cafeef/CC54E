@@ -11,11 +11,15 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    matriz.cpp \
+    ponto.cpp \
     teladedesenho.cpp
 
 HEADERS += \
     estruturas.h \
     mainwindow.h \
+    matriz.h \
+    ponto.h \
     teladedesenho.h
 
 FORMS += \

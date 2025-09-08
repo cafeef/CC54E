@@ -13,15 +13,14 @@ public:
     explicit TelaDeDesenho(QWidget *parent = nullptr);
 
     // Método público para a MainWindow poder enviar a lista de objetos para a tela
-    void setDisplayFile(const QVector<ObjetoVirtual> &df);
+    void setDisplayFile(QVector<ObjetoVirtual> *df_ptr);
 
 protected:
     // Este é o evento de pintura. O Qt chama-o quando o widget precisa ser redesenhado.
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    // A nossa tela terá a sua própria cópia do Display File para desenhar.
-    QVector<ObjetoVirtual> displayFile;
+    QVector<ObjetoVirtual> *displayFile_ptr = nullptr; // Ponteiro para o display file
 };
 
 #endif // TELADEDESENHO_H
