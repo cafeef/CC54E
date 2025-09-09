@@ -23,6 +23,8 @@ private slots:
 
     void on_escaleButton_clicked();
 
+    void on_rotationButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QVector<ObjetoVirtual> displayFile;

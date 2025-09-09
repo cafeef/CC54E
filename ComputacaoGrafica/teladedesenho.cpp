@@ -39,7 +39,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
             // Apenas desenha se a lista de pontos não estiver vazia
             if (!objeto.pontos.isEmpty()) {
                 //pegando o primeiro ponto
-                PontoMatriz ponto = objeto.pontos.first();
+                Ponto ponto = objeto.pontos.first();
                 //criando um QPointF pelo ponto e desenhando
                 painter.drawPoint(QPointF(ponto.x(), ponto.y()));
             }
@@ -49,7 +49,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         case TipoObjeto::Reta: {
             // Apenas desenha se tivermos exatamente 2 pontos (início e fim)
             if (objeto.pontos.size() == 2) {
-                PontoMatriz pontos[2] = {objeto.pontos[0], objeto.pontos[1]};
+                Ponto pontos[2] = {objeto.pontos[0], objeto.pontos[1]};
                 painter.drawLine(QPointF(pontos[0].x(), pontos[0].y()), QPointF(pontos[1].x(), pontos[1].y()));
             }
             break;
@@ -63,7 +63,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
                 QVector<QPointF> pontosParaPintar;
 
                 // 2. Loop que enche a lista temporária
-                for (const PontoMatriz &ponto : objeto.pontos) {
+                for (const Ponto &ponto : objeto.pontos) {
                     pontosParaPintar.append(QPointF(ponto.x(), ponto.y()));
                 }
 

@@ -2,9 +2,9 @@
 
 Ponto::Ponto(double x, double y) {
     //Preenche a matriz 3x1 com os valores de x, y e z (sempre 1)
-    dados.append({x});      // Adiciona a primeira linha: {x}
-    dados.append({y});      // Adiciona a segunda linha: {y}
-    dados.append({1.0});    // Adiciona a terceira linha (coordenada homogênea): {1}
+    dados.append(QVector<double>({x}));
+    dados.append(QVector<double>({y}));
+    dados.append(QVector<double>({1.0}));
 }
 
 double Ponto::x() const {

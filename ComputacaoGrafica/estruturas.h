@@ -33,10 +33,22 @@ public:
     QVector <Ponto> pontos; //um vetor de classe Ponto
     QColor cor; //cor do objeto
 
-    //Métodos de translação
+    //Métodos das transformações
     void transladar(double dx, double dy) {
         for(int i = 0; i < pontos.size(); i++) {
             pontos[i].transladar(dx, dy);
+        }
+    }
+
+    void escalonar(double sx, double sy) {
+        for(int i = 0; i < pontos.size(); i++) {
+            pontos[i].escalonar(sx, sy);
+        }
+    }
+
+    void rotacionar(double angulo) {
+        for(int i = 0; i < pontos.size(); i++) {
+            pontos[i].rotacionar(angulo);
         }
     }
 
