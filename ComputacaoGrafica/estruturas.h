@@ -52,6 +52,33 @@ public:
         }
     }
 
+    void escalonarEixo(double sx, double sy) {
+        Ponto centro = calcularCentro();
+        for(int i = 0; i < pontos.size(); i++) {
+            pontos[i].MatrizCompostaEscala(sx, sy, centro.x(), centro.y());
+        }
+    }
+
+    void rotacionarEixo(double anguloEmGraus) {
+        Ponto centro = calcularCentro();
+        for(int i = 0; i < pontos.size(); i++) {
+            pontos[i].MatrizCompostaRotacao(anguloEmGraus, centro.x(), centro.y());
+        }
+    }
+
+    Ponto calcularCentro() {
+        int quantidadePontos = pontos.size();
+        double x = 0, y = 0;
+        for(int i = 0; i < quantidadePontos; i++) {
+            x += pontos[i].x();
+            y += pontos[i].y();
+        }
+        x = x / quantidadePontos;
+        y = y / quantidadePontos;
+        Ponto centro = Ponto(x, y);
+        return centro;
+    }
+
 };
 
 // O nosso "Display File" será simplesmente um vetor destes objetos.

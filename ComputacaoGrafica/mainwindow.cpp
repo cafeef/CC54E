@@ -108,3 +108,26 @@ void MainWindow::on_rotationButton_clicked()
     ui->TelaDesenho->update();
 }
 
+
+void MainWindow::on_escaleEixoButton_clicked()
+{
+    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
+    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    double sx, sy;
+    sx = ui->escaleXSpinBox->value();
+    sy = ui->escaleYSpinBox->value();
+    objetoSelecionado.escalonarEixo(sx, sy);
+    ui->TelaDesenho->update();
+}
+
+
+void MainWindow::on_rotationEixoButton_clicked()
+{
+    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
+    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    double angulo;
+    angulo = ui->rotationAngleSpinBox->value();
+    objetoSelecionado.rotacionarEixo(angulo);
+    ui->TelaDesenho->update();
+}
+
