@@ -8,6 +8,18 @@ Matriz::Matriz(int linhas, int colunas) {
     dados = QVector<QVector<double>>(linhas, QVector<double>(colunas, 0.0));
 }
 
+void Matriz::imprimir() const
+{
+    printf("--- Matriz ---\n");
+    for (int i = 0; i < dados.size(); ++i) {
+        for (int j = 0; j < dados[i].size(); ++j) {
+            printf("%.2f\t", dados[i][j]); // Imprime cada elemento com 2 casas decimais
+        }
+        printf("\n"); // Nova linha para cada linha da matriz
+    }
+    printf("--------------\n");
+}
+
 Matriz Matriz::operator*(const Matriz &outra) const
 {
     if (this->dados.isEmpty() || outra.dados.isEmpty()){
@@ -110,4 +122,43 @@ Matriz Matriz::criarMatrizRotacao(double anguloEmGraus)
 
     // Passo 5: Retorne a matriz de rotação
     return R;
+}
+
+Matriz Matriz::MatrizCompostaEscala(double sx, double sy, double dx, double dy)
+{
+    // Passo 1: Chamar função para criar a matriz indentidade
+    Matriz S = Matriz::criarMatrizEscala(sx, sy);
+
+    // Passo 2: Criar a matriz translação 1 com os valores positivos
+    Matriz T1 = Matriz::criarMatrizTranslacao(dx, dy);
+
+    // Passo 3: Criar a matriz translação 2 com os valores negativos
+    Matriz T2 = Matriz::criarMatrizTranslacao(-dx, -dy);
+
+    // Passo 4: aplicar a transformação T1*R*T2
+    Matriz resultado = T1 * S * T2;
+
+    S.imprimir();
+    T1.imprimir();
+    T2.imprimir();
+    resultado.imprimir();
+    return resultado;
+}
+
+Matriz Matriz::MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy)
+{
+    // Passo 1: Chamar função para criar a matriz indentidade
+    Matriz R = Matriz::criarMatrizRotacao(anguloEmGraus);
+
+    // Passo 2: Criar a matriz translação 1 com os valores positivos
+    Matriz T1 = Matriz::criarMatrizTranslacao(dx, dy);
+
+    // Passo 3: Criar a matriz translação 2 com os valores negativos
+    Matriz T2 = Matriz::criarMatrizTranslacao(-dx, -dy);
+
+    // Passo 4: aplicar a transformação T1*R*T2
+    Matriz resultado = T1 * R * T2;
+
+    resultado.imprimir();
+    return resultado;
 }

@@ -54,15 +54,19 @@ public:
 
     void escalonarEixo(double sx, double sy) {
         Ponto centro = calcularCentro();
+        Matriz R = Matriz::MatrizCompostaEscala(sx, sy, centro.x(), centro.y());
         for(int i = 0; i < pontos.size(); i++) {
-            pontos[i].MatrizCompostaEscala(sx, sy, centro.x(), centro.y());
+            pontos[i] = Ponto(R * pontos[i]);
+            printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
         }
     }
 
     void rotacionarEixo(double anguloEmGraus) {
         Ponto centro = calcularCentro();
+        Matriz R = Matriz::MatrizCompostaRotacao(anguloEmGraus, centro.x(), centro.y());
         for(int i = 0; i < pontos.size(); i++) {
-            pontos[i].MatrizCompostaRotacao(anguloEmGraus, centro.x(), centro.y());
+            pontos[i] = Ponto(R * pontos[i]);
+            printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
         }
     }
 

@@ -19,6 +19,7 @@ public:
     // --- OPERAÇÕES ---
     // Sobrecarrega o operador * para que possamos fazer A * B
     Matriz operator*(const Matriz &outra) const;
+    void imprimir() const;
 
 
     // --- MÉTODOS DE FÁBRICA (STATIC) ---
@@ -33,6 +34,10 @@ public:
     static Matriz criarMatrizEscala(double sx, double sy);
     // Cria uma matriz de rotação 3x3
     static Matriz criarMatrizRotacao(double anguloEmGraus);
+    // Cria uma matriz de escala 3x3
+    static Matriz MatrizCompostaEscala(double sx, double sy, double dx, double dy);
+    // Cria uma matriz de rotação 3x3
+    static Matriz MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy);
 
 protected:
     // Usamos 'protected' para que as classes filhas (como Ponto) possam aceder
