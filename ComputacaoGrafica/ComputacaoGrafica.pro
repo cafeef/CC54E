@@ -13,14 +13,16 @@ SOURCES += \
     mainwindow.cpp \
     matriz.cpp \
     ponto.cpp \
-    teladedesenho.cpp
+    teladedesenho.cpp \
+    window.cpp
 
 HEADERS += \
     estruturas.h \
     mainwindow.h \
     matriz.h \
     ponto.h \
-    teladedesenho.h
+    teladedesenho.h \
+    window.h
 
 FORMS += \
     mainwindow.ui

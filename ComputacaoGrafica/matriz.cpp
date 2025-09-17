@@ -138,10 +138,6 @@ Matriz Matriz::MatrizCompostaEscala(double sx, double sy, double dx, double dy)
     // Passo 4: aplicar a transformação T1*R*T2
     Matriz resultado = T1 * S * T2;
 
-    S.imprimir();
-    T1.imprimir();
-    T2.imprimir();
-    resultado.imprimir();
     return resultado;
 }
 
@@ -159,6 +155,5 @@ Matriz Matriz::MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy)
     // Passo 4: aplicar a transformação T1*R*T2
     Matriz resultado = T1 * R * T2;
 
-    resultado.imprimir();
     return resultado;
 }
