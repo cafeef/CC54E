@@ -14,6 +14,30 @@ void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *df_ptr) {
     this->displayFile_ptr = df_ptr; // Guarda o ponteiro
 }
 
+void TelaDeDesenho::setWindow(Window *w) {
+    this->window_ptr = w;
+}
+
+Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
+{
+    // ... (obter dados da window e viewport) ...
+    Ponto centroWindow = window_ptr->getCentro();
+    double anguloWindow = window_ptr->getAngulo();
+    double larguraViewport = this->width();
+    double alturaViewport = this->height();
+
+    // ... (código para criar T, R, S, T_viewport) ...
+    Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
+    Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
+    Matriz S = Matriz::criarMatrizEscala(larguraViewport / window_ptr->getLargura(),
+                                         -alturaViewport / window_ptr->getAltura());
+    Matriz T_viewport = Matriz::criarMatrizTranslacao(larguraViewport / 2, alturaViewport / 2);
+
+    Matriz M_final = T_viewport * S * R * T;
+
+    return M_final;
+}
+
 void TelaDeDesenho::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
@@ -21,57 +45,56 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
 
     // Define uma caneta padrão (preta, 2 pixels de largura) para os desenhos
     QPen caneta;
-    caneta.setColor(Qt::black);
-    caneta.setWidth(2);
+    caneta.setColor(Qt::white);
+    caneta.setWidth(5);
     painter.setPen(caneta);
 
-    // 1. Percorre a lista de todos os objetos virtuais
+    if (!displayFile_ptr || !window_ptr) return;
+
+    // 1. Calcule a matriz de transformação (seu código está perfeito aqui)
+    Matriz M_wv = calcularMatrizDeVisualizacao();
+
+    // 2. Loop principal para aplicar a transformação em todos os pontos
     for (const ObjetoVirtual &objeto : *displayFile_ptr) {
+        // Cria a lista com os pontos já na coordenada da tela (seu código está perfeito aqui)
+        QVector<QPointF> pontos_transformados;
+        for (const Ponto &ponto_original : objeto.pontos) {
+            Matriz ponto_na_tela_matriz = M_wv * ponto_original;
+            pontos_transformados.append(QPointF(ponto_na_tela_matriz.getDados()[0][0],
+                                                ponto_na_tela_matriz.getDados()[1][0]));
+        }
 
-        // Define a cor da caneta com base na cor guardada no objeto
-        caneta.setColor(objeto.cor);
-        painter.setPen(caneta); // Aplica a caneta (com a cor certa) ao pintor
+        // Agora, usamos APENAS a lista 'pontos_transformados' para desenhar.
 
-        // 2. Verifica o tipo de cada objeto para saber como desenhá-lo
+        if (pontos_transformados.isEmpty()) {
+            continue; // Pula para o próximo objeto se não houver pontos
+        }
+
         switch (objeto.tipo) {
-
         case TipoObjeto::Ponto: {
-            // Apenas desenha se a lista de pontos não estiver vazia
-            if (!objeto.pontos.isEmpty()) {
-                //pegando o primeiro ponto
-                Ponto ponto = objeto.pontos.first();
-                //criando um QPointF pelo ponto e desenhando
-                painter.drawPoint(QPointF(ponto.x(), ponto.y()));
-            }
+            caneta.setColor(objeto.cor);
+            painter.setPen(caneta);
+            painter.drawPoint(pontos_transformados.first());
             break;
         }
 
         case TipoObjeto::Reta: {
-            // Apenas desenha se tivermos exatamente 2 pontos (início e fim)
-            if (objeto.pontos.size() == 2) {
-                Ponto pontos[2] = {objeto.pontos[0], objeto.pontos[1]};
-                painter.drawLine(QPointF(pontos[0].x(), pontos[0].y()), QPointF(pontos[1].x(), pontos[1].y()));
+            caneta.setColor(objeto.cor);
+            painter.setPen(caneta);
+            if (pontos_transformados.size() == 2) {
+                painter.drawLine(pontos_transformados[0], pontos_transformados[1]);
             }
             break;
         }
 
         case TipoObjeto::Poligono: {
-            // Apenas desenha se tivermos 3 ou mais pontos
-            if (objeto.pontos.size() >= 3) {
-
-                // 1. Cria a lista temporária para os pontos convertidos
-                QVector<QPointF> pontosParaPintar;
-
-                // 2. Loop que enche a lista temporária
-                for (const Ponto &ponto : objeto.pontos) {
-                    pontosParaPintar.append(QPointF(ponto.x(), ponto.y()));
-                }
-
-                // 3. Chama a função de desenho uma única vez com a lista completa
-                painter.drawPolygon(pontosParaPintar);
+            caneta.setColor(objeto.cor);
+            painter.setPen(caneta);
+            if (pontos_transformados.size() >= 3) {
+                painter.drawPolygon(pontos_transformados);
             }
             break;
         }
         } // fim do switch
-    } // fim do for
+    } // fim do loop for
 }

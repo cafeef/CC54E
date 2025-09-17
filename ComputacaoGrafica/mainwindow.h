@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <estruturas.h>
+#include "window.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,8 +30,26 @@ private slots:
 
     void on_rotationEixoButton_clicked();
 
+    void on_panLeftButton_clicked();
+
+    void on_panUpButton_clicked();
+
+    void on_panRightButton_clicked();
+
+    void on_panDownButton_clicked();
+
+    void on_zoomInButton_clicked();
+
+    void on_zoomOutButton_clicked();
+
+    void on_rotateRightButton_clicked();
+
+    void on_rotateLeftButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    Window minhaWindow;
+    void centralizarNaCena();
     QVector<ObjetoVirtual> displayFile;
     QVector<QVector<double>> multiplicacao(const QVector<QVector<double>>& A, const QVector<QVector<double>>& B);
     QVector<QVector<double>> translacao(const QVector<QVector<double>> &matriz, const QVector<double> &valores);

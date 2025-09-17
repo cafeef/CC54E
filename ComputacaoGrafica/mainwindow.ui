@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>676</height>
+    <width>1494</width>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,192 +19,309 @@
      <rect>
       <x>0</x>
       <y>-20</y>
-      <width>861</width>
-      <height>650</height>
+      <width>1091</width>
+      <height>761</height>
      </rect>
     </property>
-    <widget class="QWidget" name="">
-     <property name="geometry">
-      <rect>
-       <x>471</x>
-       <y>30</y>
-       <width>371</width>
-       <height>271</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="LabelComboBox">
-            <property name="text">
-             <string>Escolha o objeto que quer mudar</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="objectSelectorComboBox"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="LabelComboBox_2">
-              <property name="text">
-               <string>Translação X</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="translateXSpinBox">
-              <property name="minimum">
-               <double>-99.989999999999995</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="LabelComboBox_3">
-              <property name="text">
-               <string>Translação Y</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="translateYSpinBox">
-              <property name="minimum">
-               <double>-99.989999999999995</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="translateButton">
-          <property name="text">
-           <string>Transladar na origem</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
-               <widget class="QLabel" name="LabelComboBox_4">
-                <property name="text">
-                 <string>Escala X</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="escaleXSpinBox">
-                <property name="minimum">
-                 <double>0.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLabel" name="LabelComboBox_5">
-                <property name="text">
-                 <string>Escala Y</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="escaleYSpinBox">
-                <property name="minimum">
-                 <double>0.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_8">
-            <item>
-             <widget class="QPushButton" name="escaleButton">
-              <property name="text">
-               <string>Escalonar na origem</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="escaleEixoButton">
-              <property name="text">
-               <string>Escalonar no eixo</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_10">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QPushButton" name="rotationEixoButton">
-            <property name="text">
-             <string>Rotacionar no eixo</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="rotationButton">
-            <property name="text">
-             <string>Rotacionar na origem</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QLabel" name="LabelComboBox_6">
-            <property name="text">
-             <string>Ângulo</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="rotationAngleSpinBox">
-            <property name="minimum">
-             <number>-360</number>
-            </property>
-            <property name="maximum">
-             <number>360</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>10</y>
+      <width>371</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="LabelComboBox">
+           <property name="text">
+            <string>Escolha o objeto que quer mudar</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="objectSelectorComboBox"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="LabelComboBox_2">
+             <property name="text">
+              <string>Translação X</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="translateXSpinBox">
+             <property name="minimum">
+              <double>-99.989999999999995</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="LabelComboBox_3">
+             <property name="text">
+              <string>Translação Y</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="translateYSpinBox">
+             <property name="minimum">
+              <double>-99.989999999999995</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="translateButton">
+         <property name="text">
+          <string>Transladar na origem</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="LabelComboBox_4">
+               <property name="text">
+                <string>Escala X</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="escaleXSpinBox">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="LabelComboBox_5">
+               <property name="text">
+                <string>Escala Y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="escaleYSpinBox">
+               <property name="minimum">
+                <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QPushButton" name="escaleButton">
+             <property name="text">
+              <string>Escalonar na origem</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="escaleEixoButton">
+             <property name="text">
+              <string>Escalonar no eixo</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QPushButton" name="rotationEixoButton">
+           <property name="text">
+            <string>Rotacionar no eixo</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rotationButton">
+           <property name="text">
+            <string>Rotacionar na origem</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="LabelComboBox_6">
+           <property name="text">
+            <string>Ângulo</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="rotationAngleSpinBox">
+           <property name="minimum">
+            <number>-360</number>
+           </property>
+           <property name="maximum">
+            <number>360</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>1210</x>
+      <y>290</y>
+      <width>260</width>
+      <height>152</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_7">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Navegação</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QPushButton" name="panLeftButton">
+           <property name="text">
+            <string>◀</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QPushButton" name="panUpButton">
+             <property name="text">
+              <string>▲</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="panDownButton">
+             <property name="text">
+              <string>▼</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="panRightButton">
+           <property name="text">
+            <string>▶</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Zoom</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QPushButton" name="zoomInButton">
+           <property name="text">
+            <string>+</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="zoomOutButton">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_15">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Rotação</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <item>
+          <widget class="QPushButton" name="rotateRightButton">
+           <property name="text">
+            <string>↻</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rotateLeftButton">
+           <property name="text">
+            <string>↺</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

@@ -157,3 +157,4 @@ Matriz Matriz::MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy)
 
     return resultado;
 }
+
