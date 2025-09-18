@@ -38,10 +38,50 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "MainWindow"
+        "MainWindow",
+        "on_translateButton_clicked",
+        "",
+        "on_escaleButton_clicked",
+        "on_rotationButton_clicked",
+        "on_escaleEixoButton_clicked",
+        "on_rotationEixoButton_clicked",
+        "on_panLeftButton_clicked",
+        "on_panUpButton_clicked",
+        "on_panRightButton_clicked",
+        "on_panDownButton_clicked",
+        "on_zoomInButton_clicked",
+        "on_zoomOutButton_clicked",
+        "on_rotateRightButton_clicked",
+        "on_rotateLeftButton_clicked"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Slot 'on_translateButton_clicked'
+        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_escaleButton_clicked'
+        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_rotationButton_clicked'
+        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_escaleEixoButton_clicked'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_rotationEixoButton_clicked'
+        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_panLeftButton_clicked'
+        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_panUpButton_clicked'
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_panRightButton_clicked'
+        QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_panDownButton_clicked'
+        QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_zoomInButton_clicked'
+        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_zoomOutButton_clicked'
+        QtMocHelpers::SlotData<void()>(12, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_rotateRightButton_clicked'
+        QtMocHelpers::SlotData<void()>(13, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_rotateLeftButton_clicked'
+        QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,9 +103,24 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
 void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<MainWindow *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->on_translateButton_clicked(); break;
+        case 1: _t->on_escaleButton_clicked(); break;
+        case 2: _t->on_rotationButton_clicked(); break;
+        case 3: _t->on_escaleEixoButton_clicked(); break;
+        case 4: _t->on_rotationEixoButton_clicked(); break;
+        case 5: _t->on_panLeftButton_clicked(); break;
+        case 6: _t->on_panUpButton_clicked(); break;
+        case 7: _t->on_panRightButton_clicked(); break;
+        case 8: _t->on_panDownButton_clicked(); break;
+        case 9: _t->on_zoomInButton_clicked(); break;
+        case 10: _t->on_zoomOutButton_clicked(); break;
+        case 11: _t->on_rotateRightButton_clicked(); break;
+        case 12: _t->on_rotateLeftButton_clicked(); break;
+        default: ;
+        }
+    }
     (void)_a;
 }
 
@@ -85,6 +140,18 @@ void *MainWindow::qt_metacast(const char *_clname)
 int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 13)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 13;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 13)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 13;
+    }
     return _id;
 }
 QT_WARNING_POP

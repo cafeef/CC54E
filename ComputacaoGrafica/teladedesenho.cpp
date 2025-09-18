@@ -20,22 +20,34 @@ void TelaDeDesenho::setWindow(Window *w) {
 
 Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
 {
-    // ... (obter dados da window e viewport) ...
+    // Obter dados da Window e Viewport (sem alterações aqui)
     Ponto centroWindow = window_ptr->getCentro();
     double anguloWindow = window_ptr->getAngulo();
     double larguraViewport = this->width();
     double alturaViewport = this->height();
 
-    // ... (código para criar T, R, S, T_viewport) ...
+    // --- AQUI ESTÁ A CORREÇÃO PARA A DEFORMAÇÃO ---
+
+    // 1. Calcula os fatores de escala para cada eixo separadamente
+    double fatorEscalaX = larguraViewport / window_ptr->getLargura();
+    double fatorEscalaY = alturaViewport / window_ptr->getAltura(); // Usamos o valor positivo para comparar
+
+    // 2. Escolhe o MENOR dos dois fatores. Isso garante que a cena inteira
+    //    caiba na tela sem ser cortada e sem deformar.
+    double fatorEscalaUniforme = std::min(fatorEscalaX, fatorEscalaY);
+
+    // 3. Cria a matriz de escala usando o mesmo fator para ambos os eixos.
+    //    A inversão do Y continua a ser necessária para o sistema de coordenadas da tela.
+    Matriz S = Matriz::criarMatrizEscala(fatorEscalaUniforme, -fatorEscalaUniforme);
+
+    // ---------------------------------------------------
+
+    // O resto da função continua igual
     Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
     Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
-    Matriz S = Matriz::criarMatrizEscala(larguraViewport / window_ptr->getLargura(),
-                                         -alturaViewport / window_ptr->getAltura());
     Matriz T_viewport = Matriz::criarMatrizTranslacao(larguraViewport / 2, alturaViewport / 2);
 
-    Matriz M_final = T_viewport * S * R * T;
-
-    return M_final;
+    return T_viewport * S * R * T;
 }
 
 void TelaDeDesenho::paintEvent(QPaintEvent *event)
