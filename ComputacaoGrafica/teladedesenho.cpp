@@ -3,7 +3,7 @@
 
 TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent)
 {
-    // Define um fundo branco para a nossa área de desenho
+    // Define um fundo preto para a nossa área de desenho
     setAutoFillBackground(true);
     QPalette pal = palette();
     pal.setColor(QPalette::Window, Qt::black);
@@ -26,8 +26,6 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
     double larguraViewport = this->width();
     double alturaViewport = this->height();
 
-    // --- AQUI ESTÁ A CORREÇÃO PARA A DEFORMAÇÃO ---
-
     // 1. Calcula os fatores de escala para cada eixo separadamente
     double fatorEscalaX = larguraViewport / window_ptr->getLargura();
     double fatorEscalaY = alturaViewport / window_ptr->getAltura(); // Usamos o valor positivo para comparar
@@ -40,9 +38,7 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
     //    A inversão do Y continua a ser necessária para o sistema de coordenadas da tela.
     Matriz S = Matriz::criarMatrizEscala(fatorEscalaUniforme, -fatorEscalaUniforme);
 
-    // ---------------------------------------------------
-
-    // O resto da função continua igual
+    //Criação das matrizes de translação e rotação
     Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
     Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
     Matriz T_viewport = Matriz::criarMatrizTranslacao(larguraViewport / 2, alturaViewport / 2);
@@ -55,7 +51,7 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
     QPainter painter(this); // Inicia a "caneta" de desenho
 
-    // Define uma caneta padrão (preta, 2 pixels de largura) para os desenhos
+    // Define uma caneta padrão (preta, 5 pixels de largura) para os desenhos
     QPen caneta;
     caneta.setColor(Qt::white);
     caneta.setWidth(5);
