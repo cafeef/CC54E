@@ -83,6 +83,13 @@ public:
         return centro;
     }
 
+    void imprimir() const {
+        printf("Objeto: %s\n", nome.toStdString().c_str());
+        for(int i=0; i<pontos.size(); ++i) {
+            printf("  Ponto %d: (%.1f, %.1f)\n", i, pontos[i].x(), pontos[i].y());
+        }
+    }
+
 };
 
 // O nosso "Display File" será simplesmente um vetor destes objetos.

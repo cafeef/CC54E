@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "estruturas.h"
 #include <cmath>
+#include <limits>
+#include <vector> // Para std::vector
 #include <QString>
 #include <QTimer>
 
@@ -10,8 +12,19 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->TelaDesenho->setWindow(&minhaWindow);
 
+    // --- Criação da Window como um Objeto ---
+    ObjetoVirtual windowObj;
+    windowObj.nome = "#WINDOW_CAMERA"; // Um nome especial para a identificarmos
+    windowObj.tipo = TipoObjeto::Poligono;
+    windowObj.cor = Qt::gray; // Uma cor para podermos vê-la
+    // Criamos um retângulo padrão de 200x200 centrado na origem
+    windowObj.pontos.append(Ponto(-100, -100));
+    windowObj.pontos.append(Ponto(100, -100));
+    windowObj.pontos.append(Ponto(100, 100));
+    windowObj.pontos.append(Ponto(-100, 100));
+    displayFile.append(windowObj);
+    indiceDaWindow = displayFile.size() - 1; // Guardamos o índice dela
 
     // --- Exemplo de criação de objetos ---
     //declaração de coordenadas, uma lista de pontos que um desenho tem. vai servir para atribuir a matriz em PontoMatriz
@@ -88,6 +101,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->TelaDesenho->setDisplayFile(&displayFile);
 
+    // --- Ajuste Inicial ---
+    ajustarWindowParaCena();
+
+    // ---- DEBUG: VERIFICAR ESTADO INICIAL DA WINDOW ----
+    printf("\n--- Estado da Window APÓS a criação ---\n");
+    displayFile[indiceDaWindow].imprimir(); // Vamos criar um método imprimir no ObjetoVirtual
+    // --------------------------------------------------
+
+
 
     //Percorrendo o displayFile para adicionar os objetos no combobox (seleção de objetos a serem alterados)
     for (int i = 0; i < displayFile.size(); i++) {
@@ -99,6 +121,68 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::ajustarWindowParaCena()
+{
+    // Pega uma referência ao nosso objeto window para o modificarmos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Cria uma lista temporária com todos os pontos de TODOS os objetos,
+    // exceto os da própria window.
+    std::vector<Ponto> todosOsPontos;
+    for (int i = 0; i < displayFile.size(); ++i) {
+        if (i == indiceDaWindow) continue; // Pula o objeto window
+        for (const Ponto &ponto : displayFile[i].pontos) {
+            todosOsPontos.push_back(ponto);
+        }
+    }
+
+    // --- LÓGICA DE DECISÃO ---
+
+    // Se a lista de pontos estiver vazia (não há outros objetos para enquadrar)...
+    if (todosOsPontos.empty()) {
+        // ...então redefinimos a window para o seu estado padrão.
+        // Um retângulo de 200x200 centrado na origem.
+        windowObj.pontos.clear();
+        windowObj.pontos.append(Ponto(-100, -100));
+        windowObj.pontos.append(Ponto(100, -100));
+        windowObj.pontos.append(Ponto(100, 100));
+        windowObj.pontos.append(Ponto(-100, 100));
+        return; // E terminamos a função aqui.
+    }
+
+    // --- Se chegamos aqui, significa que HÁ objetos para enquadrar ---
+
+    // Encontra os limites da cena (Bounding Box) usando a lista que criámos
+    double minX = todosOsPontos[0].x();
+    double minY = todosOsPontos[0].y();
+    double maxX = todosOsPontos[0].x();
+    double maxY = todosOsPontos[0].y();
+
+    for (const Ponto &ponto : todosOsPontos) {
+        if (ponto.x() < minX) minX = ponto.x();
+        if (ponto.x() > maxX) maxX = ponto.x();
+        if (ponto.y() < minY) minY = ponto.y();
+        if (ponto.y() > maxY) maxY = ponto.y();
+    }
+
+    // Calcula o novo centro e tamanho com uma margem de 10%
+    double centroX = (minX + maxX) / 2.0;
+    double centroY = (minY + maxY) / 2.0;
+    double larguraCena = (maxX - minX) * 1.1;
+    double alturaCena = (maxY - minY) * 1.1;
+
+    // Garante que a window não tenha tamanho zero se a cena for um único ponto
+    if (larguraCena < 1e-6) larguraCena = 10;
+    if (alturaCena < 1e-6) alturaCena = 10;
+
+    // Limpa os pontos antigos e define os novos que enquadram a cena
+    windowObj.pontos.clear();
+    windowObj.pontos.append(Ponto(centroX - larguraCena / 2, centroY - alturaCena / 2));
+    windowObj.pontos.append(Ponto(centroX + larguraCena / 2, centroY - alturaCena / 2));
+    windowObj.pontos.append(Ponto(centroX + larguraCena / 2, centroY + alturaCena / 2));
+    windowObj.pontos.append(Ponto(centroX - larguraCena / 2, centroY + alturaCena / 2));
 }
 
 void MainWindow::on_translateButton_clicked()
@@ -299,15 +383,25 @@ void MainWindow::on_rotationEixoButton_clicked()
 
 void MainWindow::on_panUpButton_clicked()
 {
-    minhaWindow.pan(0, -10); // Altera o estado da window
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.transladar(0, -10); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_panRightButton_clicked()
 {
-    minhaWindow.pan(10, 0); // Altera o estado da window
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.transladar(10, 0); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
@@ -315,42 +409,72 @@ void MainWindow::on_panRightButton_clicked()
 
 void MainWindow::on_panDownButton_clicked()
 {
-    minhaWindow.pan(0, 10); // Altera o estado da window
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.transladar(0, 10); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_panLeftButton_clicked()
 {
-    minhaWindow.pan(-10, 0); // Altera o estado da window
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.transladar(-10, 0); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_zoomInButton_clicked()
 {
-    minhaWindow.zoom(0.9);
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.escalonarEixo(0.9, 0.9); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_zoomOutButton_clicked()
 {
-    minhaWindow.zoom(1.1);
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.escalonarEixo(1.1, 1.1); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_rotateRightButton_clicked()
 {
-    minhaWindow.rotacionar(-5);
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.rotacionarEixo(-5); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
 
 void MainWindow::on_rotateLeftButton_clicked()
 {
-    minhaWindow.rotacionar(5);
-    ui->TelaDesenho->update(); // Manda redesenhar com a nova "câmera"
+    // Pega o nosso objeto Window pelo índice que guardámos
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    // Aplica a translação diretamente no objeto
+    windowObj.rotacionarEixo(5); // Move a "câmera" para cima
+
+    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 

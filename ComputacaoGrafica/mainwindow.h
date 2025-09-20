@@ -48,8 +48,11 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    Window minhaWindow;
     void centralizarNaCena();
+    // Um índice para encontrar rapidamente o objeto Window no displayFile
+    int indiceDaWindow = -1;
+    // Renomeamos a função para ser mais clara
+    void ajustarWindowParaCena();
     QVector<ObjetoVirtual> displayFile;
     QVector<QVector<double>> multiplicacao(const QVector<QVector<double>>& A, const QVector<QVector<double>>& B);
     QVector<QVector<double>> translacao(const QVector<QVector<double>> &matriz, const QVector<double> &valores);

@@ -1,5 +1,7 @@
 #include "teladedesenho.h"
 #include <QPainter> // A classe QPainter é a "caneta" que usamos para desenhar
+#include <cmath>
+#include <algorithm>
 
 TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent)
 {
@@ -14,81 +16,119 @@ void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *df_ptr) {
     this->displayFile_ptr = df_ptr; // Guarda o ponteiro
 }
 
-void TelaDeDesenho::setWindow(Window *w) {
-    this->window_ptr = w;
-}
-
 Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
 {
-    // Obter dados da Window e Viewport (sem alterações aqui)
-    Ponto centroWindow = window_ptr->getCentro();
-    double anguloWindow = window_ptr->getAngulo();
-    double larguraViewport = this->width();
-    double alturaViewport = this->height();
+    // --- Etapa 1: Encontrar e Extrair Dados do Objeto Window ---
+    ObjetoVirtual windowObj;
+    bool encontrouWindow = false;
+    for (const auto &obj : *displayFile_ptr) {
+        if (obj.nome == "#WINDOW_CAMERA") {
+            windowObj = obj;
+            encontrouWindow = true;
+            break;
+        }
+    }
+    if (!encontrouWindow) return Matriz::criarIdentidade();
 
-    // 1. Calcula os fatores de escala para cada eixo separadamente
-    double fatorEscalaX = larguraViewport / window_ptr->getLargura();
-    double fatorEscalaY = alturaViewport / window_ptr->getAltura(); // Usamos o valor positivo para comparar
+    Ponto centroWindow = windowObj.calcularCentro();
+    Ponto p0 = windowObj.pontos[0], p1 = windowObj.pontos[1], p3 = windowObj.pontos[3];
+    double dx_largura = p1.x() - p0.x(), dy_largura = p1.y() - p0.y();
+    double larguraWindow = std::sqrt(dx_largura * dx_largura + dy_largura * dy_largura);
+    double dx_altura = p3.x() - p0.x(), dy_altura = p3.y() - p0.y();
+    double alturaWindow = std::sqrt(dx_altura * dx_altura + dy_altura * dy_altura);
+    double anguloRadianos = std::atan2(dy_largura, dx_largura);
+    double anguloWindow = anguloRadianos * 180.0 / M_PI;
 
-    // 2. Escolhe o MENOR dos dois fatores. Isso garante que a cena inteira
-    //    caiba na tela sem ser cortada e sem deformar.
-    double fatorEscalaUniforme = std::min(fatorEscalaX, fatorEscalaY);
+    // Proteção contra window com tamanho zero
+    if (larguraWindow < 1e-6 || alturaWindow < 1e-6) return Matriz::criarIdentidade();
 
-    // 3. Cria a matriz de escala usando o mesmo fator para ambos os eixos.
-    //    A inversão do Y continua a ser necessária para o sistema de coordenadas da tela.
-    Matriz S = Matriz::criarMatrizEscala(fatorEscalaUniforme, -fatorEscalaUniforme);
 
-    //Criação das matrizes de translação e rotação
+    // --- Etapa 2: Construir a Matriz de Normalização (Mundo -> SCN) ---
     Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
     Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
-    Matriz T_viewport = Matriz::criarMatrizTranslacao(larguraViewport / 2, alturaViewport / 2);
 
-    return T_viewport * S * R * T;
+    // --- CORREÇÃO DE DISTORÇÃO (Parte 1) ---
+    // Para normalizar sem distorcer, precisamos de mapear a MAIOR dimensão da window
+    // (seja largura ou altura) para o tamanho do SCN (que é 2, de -1 a 1).
+    double maiorDimensaoWindow = std::max(larguraWindow, alturaWindow);
+    double fatorEscalaNorm = 2.0 / maiorDimensaoWindow;
+    Matriz S_norm = Matriz::criarMatrizEscala(fatorEscalaNorm, fatorEscalaNorm);
+    // -----------------------------------------
+    Matriz M_norm = S_norm * R * T;
+
+
+    // --- Etapa 3: Construir a Matriz de Viewport (SCN -> Tela) ---
+    double larguraViewport = this->width();
+    double alturaViewport = this->height();
+    Matriz T_vp = Matriz::criarMatrizTranslacao(larguraViewport / 2.0, alturaViewport / 2.0);
+
+    // --- CORREÇÃO DE DISTORÇÃO (Parte 2) ---
+    // Para mapear o SCN para a viewport sem distorcer, precisamos de mapear o SCN
+    // para a MENOR dimensão da viewport.
+    double menorDimensaoViewport = std::min(larguraViewport, alturaViewport);
+    double fatorEscalaVp = menorDimensaoViewport / 2.0;
+    Matriz S_vp = Matriz::criarMatrizEscala(fatorEscalaVp, -fatorEscalaVp); // Inverte Y
+    // -----------------------------------------
+    Matriz M_vp = T_vp * S_vp;
+
+
+    // --- Etapa Final: Retornar a Matriz Composta Total ---
+    return M_vp * M_norm;
 }
 
 void TelaDeDesenho::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
-    QPainter painter(this); // Inicia a "caneta" de desenho
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing); // Deixa o desenho mais suave
 
-    // Define uma caneta padrão (preta, 5 pixels de largura) para os desenhos
-    QPen caneta;
-    caneta.setColor(Qt::white);
-    caneta.setWidth(5);
-    painter.setPen(caneta);
+    // --- Verificações de Segurança ---
+    // Só desenha se tivermos um displayFile para usar
+    if (!displayFile_ptr) {
+        return;
+    }
 
-    if (!displayFile_ptr || !window_ptr) return;
-
-    // 1. Calcule a matriz de transformação (seu código está perfeito aqui)
+    // --- Etapa 1: Calcular a Matriz de Transformação ---
+    // Esta matriz contém toda a lógica da câmera (Window/Viewport/SCN)
     Matriz M_wv = calcularMatrizDeVisualizacao();
 
-    // 2. Loop principal para aplicar a transformação em todos os pontos
+    // --- Etapa 2: Desenhar todos os Objetos do Mundo ---
+
+    // Define uma caneta padrão para garantir que os objetos sejam visíveis
+    QPen canetaPadrao;
+    canetaPadrao.setColor(Qt::white);
+    canetaPadrao.setWidth(5); // Uma espessura visível
+
     for (const ObjetoVirtual &objeto : *displayFile_ptr) {
-        // Cria a lista com os pontos já na coordenada da tela (seu código está perfeito aqui)
+        // Cria uma lista temporária para guardar os pontos já em coordenadas de tela
         QVector<QPointF> pontos_transformados;
+
+        // Para cada ponto original do objeto no "mundo"...
         for (const Ponto &ponto_original : objeto.pontos) {
+            // ...aplica a nossa matriz de visualização para encontrar sua posição na tela.
             Matriz ponto_na_tela_matriz = M_wv * ponto_original;
+
+            // Converte o resultado para um QPointF que o QPainter entende
             pontos_transformados.append(QPointF(ponto_na_tela_matriz.getDados()[0][0],
                                                 ponto_na_tela_matriz.getDados()[1][0]));
         }
 
-        // Agora, usamos APENAS a lista 'pontos_transformados' para desenhar.
-
+        // Se o objeto não tiver pontos transformados, pula para o próximo
         if (pontos_transformados.isEmpty()) {
-            continue; // Pula para o próximo objeto se não houver pontos
+            continue;
         }
 
+        // Define a cor da caneta para este objeto específico
+        canetaPadrao.setColor(objeto.cor);
+        painter.setPen(canetaPadrao);
+
+        // Usa a lista 'pontos_transformados' para desenhar o objeto correto
         switch (objeto.tipo) {
         case TipoObjeto::Ponto: {
-            caneta.setColor(objeto.cor);
-            painter.setPen(caneta);
             painter.drawPoint(pontos_transformados.first());
             break;
         }
 
         case TipoObjeto::Reta: {
-            caneta.setColor(objeto.cor);
-            painter.setPen(caneta);
             if (pontos_transformados.size() == 2) {
                 painter.drawLine(pontos_transformados[0], pontos_transformados[1]);
             }
@@ -96,13 +136,12 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
         }
 
         case TipoObjeto::Poligono: {
-            caneta.setColor(objeto.cor);
-            painter.setPen(caneta);
+            // drawPolygon funciona para polígonos com 3 ou mais vértices
             if (pontos_transformados.size() >= 3) {
                 painter.drawPolygon(pontos_transformados);
             }
             break;
         }
-        } // fim do switch
-    } // fim do loop for
+        } // Fim do switch
+    } // Fim do loop for
 }
