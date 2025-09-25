@@ -47,7 +47,6 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
     Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
     Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
 
-    // --- CORREÇÃO DE DISTORÇÃO (Parte 1) ---
     // Para normalizar sem distorcer, precisamos de mapear a MAIOR dimensão da window
     // (seja largura ou altura) para o tamanho do SCN (que é 2, de -1 a 1).
     double maiorDimensaoWindow = std::max(larguraWindow, alturaWindow);
@@ -62,7 +61,6 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
     double alturaViewport = this->height();
     Matriz T_vp = Matriz::criarMatrizTranslacao(larguraViewport / 2.0, alturaViewport / 2.0);
 
-    // --- CORREÇÃO DE DISTORÇÃO (Parte 2) ---
     // Para mapear o SCN para a viewport sem distorcer, precisamos de mapear o SCN
     // para a MENOR dimensão da viewport.
     double menorDimensaoViewport = std::min(larguraViewport, alturaViewport);

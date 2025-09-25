@@ -8,7 +8,6 @@ Window::Window() : centro(0,0) {
 
 void Window::pan(double dx, double dy)
 {
-    // O método transladar que já criamos no Ponto é perfeito para isto
     centro.transladar(dx, dy);
 }
 

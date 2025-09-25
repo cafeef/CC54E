@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     ObjetoVirtual windowObj;
     windowObj.nome = "#WINDOW_CAMERA"; // Um nome especial para a identificarmos
     windowObj.tipo = TipoObjeto::Poligono;
-    windowObj.cor = Qt::gray; // Uma cor para podermos vê-la
     // Criamos um retângulo padrão de 200x200 centrado na origem
     windowObj.pontos.append(Ponto(-100, -100));
     windowObj.pontos.append(Ponto(100, -100));
