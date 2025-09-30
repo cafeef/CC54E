@@ -74,14 +74,6 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
     // Limpa a tela
     painter.fillRect(this->rect(), Qt::black);
 
-    // Desenha a borda da viewport
-    double margem = 15.0;
-    QRectF viewportRect(margem, margem, this->width() - 2 * margem, this->height() - 2 * margem);
-    painter.setPen(Qt::lightGray);
-    painter.drawRect(viewportRect);
-
-    if (!displayFile_ptr || displayFile_ptr->isEmpty()) return;
-
     // --- Etapa 1: Obter a Matriz de Transformação Final ---
     Matriz M_final = calcularMatrizDeVisualizacao();
 
@@ -113,4 +105,14 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
             painter.drawPolygon(pontos_na_tela);
         }
     }
+
+    // --- 4. DESENHAR A INTERFACE (A BORDA DA VIEWPORT) ---
+    // Esta é a última coisa a ser desenhada, garantindo que fique por cima de tudo.
+    double margem = 15.0;
+    QRectF viewportRect(margem, margem, this->width() - 2 * margem, this->height() - 2 * margem);
+
+    // Usa uma cor contrastante com o fundo preto
+    painter.setPen(QPen(Qt::gray, 1)); // Caneta cinza de 1 pixel
+    painter.setBrush(Qt::NoBrush); // Garante que o retângulo não tenha preenchimento
+    painter.drawRect(viewportRect);
 }
