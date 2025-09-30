@@ -43,7 +43,7 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const
     if (larguraWindow < 1e-6 || alturaWindow < 1e-6) return Matriz::criarIdentidade();
 
     // --- Etapa 2: Definir a Viewport Interna ---
-    double margem = 15.0;
+    double margem = 20.0;
     double vp_x_min = margem;
     double vp_y_min = margem;
     double vp_largura = this->width() - 2 * margem;
@@ -108,8 +108,8 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event)
 
     // --- 4. DESENHAR A INTERFACE (A BORDA DA VIEWPORT) ---
     // Esta é a última coisa a ser desenhada, garantindo que fique por cima de tudo.
-    double margem = 15.0;
-    QRectF viewportRect(margem, margem, this->width() - 2 * margem, this->height() - 2 * margem);
+    double margem = 20.0;
+    QRectF viewportRect(margem, margem * 2 , this->width() - 2 * margem, this->height() - 3 * margem);
 
     // Usa uma cor contrastante com o fundo preto
     painter.setPen(QPen(Qt::gray, 1)); // Caneta cinza de 1 pixel
