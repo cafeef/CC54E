@@ -27,87 +27,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     // --- Exemplo de criação de objetos ---
     //declaração de coordenadas, uma lista de pontos que um desenho tem. vai servir para atribuir a matriz em PontoMatriz
-    QVector<Ponto> coordenadas;
-
-    // 1. Criar uma casa
-    ObjetoVirtual casa;
-    casa.nome = "Casa";
-    casa.tipo = TipoObjeto::Poligono;
-    coordenadas = {Ponto(-80, 40), // Base inferior esquerda
-        Ponto(-40, 40), // Base inferior direita
-        Ponto(-40, 70), // Canto superior direito da parede
-        Ponto(-60, 90), // Pico do telhado
-        Ponto(-80, 70)  // Canto superior esquerdo da parede
-    };
-
-    //adicionando em pontos cada matriz de coordenada
-    for(const Ponto &ponto : coordenadas) {
-        casa.pontos.append(ponto);
-    }
-    casa.cor = Qt::green;
-
-    coordenadas.clear();
-
-    //2. Criar um coração
-    ObjetoVirtual coxinha;
-    coxinha.nome = "Coxinha";
-    coxinha.tipo = TipoObjeto::Poligono;
-    coordenadas = {Ponto(0, -50),   Ponto(3, -52),   Ponto(6, -54),   Ponto(9, -56),
-                   Ponto(12, -58),  Ponto(15, -60),  Ponto(18, -62),  Ponto(21, -64),
-                   Ponto(23, -66),  Ponto(25, -69),  Ponto(27, -72),  Ponto(28, -75),
-                   Ponto(29, -78),  Ponto(29, -82),  Ponto(28, -85),  Ponto(26, -88),
-                   Ponto(24, -91),  Ponto(21, -93),  Ponto(17, -95),  Ponto(13, -97),
-                   Ponto(9, -98),   Ponto(4, -99),   Ponto(0, -99),   Ponto(-4, -99),
-                   Ponto(-9, -98),  Ponto(-13, -97), Ponto(-17, -95), Ponto(-21, -93),
-                   Ponto(-24, -91), Ponto(-26, -88), Ponto(-28, -85), Ponto(-29, -82),
-                   Ponto(-29, -78), Ponto(-28, -75), Ponto(-27, -72), Ponto(-25, -69),
-                   Ponto(-23, -66), Ponto(-21, -64), Ponto(-18, -62), Ponto(-15, -60),
-                   Ponto(-12, -58), Ponto(-9, -56),  Ponto(-6, -54),  Ponto(-3, -52)
-    };
-
-    //adicionando em pontos cada matriz de coordenada
-    for(const Ponto &ponto : coordenadas) {
-        coxinha.pontos.append(ponto);
-    }
-    coxinha.cor = Qt::red;
-    coordenadas.clear();
-
-    //Criar um círculo
-    ObjetoVirtual circulo;
-    circulo.nome = "Círculo";
-    circulo.tipo = TipoObjeto::Poligono;
-    coordenadas = {Ponto(75, 75),   Ponto(74, 82),   Ponto(71, 88),   Ponto(66, 93),
-                   Ponto(60, 97),   Ponto(53, 99),   Ponto(45, 100),  Ponto(38, 99),
-                   Ponto(31, 97),   Ponto(25, 93),   Ponto(20, 88),   Ponto(17, 82),
-                   Ponto(15, 75),   Ponto(17, 68),   Ponto(20, 62),   Ponto(25, 57),
-                   Ponto(31, 53),   Ponto(38, 51),   Ponto(45, 50),   Ponto(53, 51),
-                   Ponto(60, 53),   Ponto(66, 57),   Ponto(71, 62),   Ponto(74, 68)
-    };
-
-    //adicionando em pontos cada matriz de coordenada
-    for(const Ponto &ponto : coordenadas) {
-        circulo.pontos.append(ponto);
-    }
-    circulo.cor = Qt::yellow;
-
-    coordenadas.clear();
-
-    // 5. Adicionar os objetos ao Display File
+    // Cria uma casa completa na posição (200, 200)
+    QVector<ObjetoVirtual> casa = criarCasaCompleta(200, 200, "Casa de Campo");
     displayFile.append(casa);
-    displayFile.append(coxinha);
-    displayFile.append(circulo);
+
+    // Cria uma flor na posição (-150, 100)
+    QVector<ObjetoVirtual> flor = criarFlor(-150, 100, "Girassol");
+    displayFile.append(flor);
+
+    // Cria um Pikachu na posição (0, -200)
+    QVector<ObjetoVirtual> pikachu = criarPikachu(0, -200, "Pikachu");
+    displayFile.append(pikachu);
 
 
     ui->TelaDesenho->setDisplayFile(&displayFile);
 
     // --- Ajuste Inicial ---
     ajustarWindowParaCena();
-
-    // ---- DEBUG: VERIFICAR ESTADO INICIAL DA WINDOW ----
-    printf("\n--- Estado da Window APÓS a criação ---\n");
-    displayFile[indiceDaWindow].imprimir(); // Vamos criar um método imprimir no ObjetoVirtual
-    // --------------------------------------------------
-
 
 
     //Percorrendo o displayFile para adicionar os objetos no combobox (seleção de objetos a serem alterados)
@@ -117,10 +53,165 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
+QVector<ObjetoVirtual> MainWindow::criarCasaCompleta(double x_centro, double y_centro, const QString& nome_base) {
+    QVector<ObjetoVirtual> partesDaCasa;
+
+    // --- Parte 1: Estrutura da Casa (Paredes e Telhado) ---
+    ObjetoVirtual estrutura;
+    estrutura.nome = nome_base;
+    estrutura.tipo = TipoObjeto::Poligono;
+    estrutura.cor = QColor("#D2B48C"); // Cor Tan (madeira clara)
+
+    // Coordenadas locais da estrutura (em torno de 0,0)
+    QVector<Ponto> coordsEstrutura = {
+        Ponto(-50, -40), Ponto(50, -40), Ponto(50, 40), Ponto(0, 70), Ponto(-50, 40)
+    };
+    for (const auto& p : coordsEstrutura) {
+        // Adiciona o deslocamento para a posição final
+        estrutura.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesDaCasa.append(estrutura);
+
+    // --- Parte 2: A Porta ---
+    ObjetoVirtual porta;
+    porta.nome = nome_base + " - Porta";
+    porta.tipo = TipoObjeto::Poligono;
+    porta.cor = QColor("#8B4513"); // Cor SaddleBrown (madeira escura)
+
+    // Coordenadas locais da porta
+    QVector<Ponto> coordsPorta = {
+        Ponto(-10, -40), Ponto(10, -40), Ponto(10, 0), Ponto(-10, 0)
+    };
+    for (const auto& p : coordsPorta) {
+        porta.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesDaCasa.append(porta);
+
+    return partesDaCasa;
+}
+
+
+QVector<ObjetoVirtual> MainWindow::criarFlor(double x_centro, double y_centro, const QString& nome_base) {
+    QVector<ObjetoVirtual> partesDaFlor;
+
+    // --- Parte 1: O Miolo (Centro) ---
+    ObjetoVirtual miolo;
+    miolo.nome = nome_base + " - Miolo";
+    miolo.tipo = TipoObjeto::Poligono;
+    miolo.cor = Qt::yellow;
+
+    // Cria um polígono que aproxima um círculo para o miolo
+    for (int i = 0; i < 12; ++i) {
+        double angulo = i * (360.0 / 12.0) * M_PI / 180.0; // Ângulo em radianos
+        double raio = 15.0;
+        miolo.pontos.append(Ponto(raio * cos(angulo) + x_centro, raio * sin(angulo) + y_centro));
+    }
+    partesDaFlor.append(miolo);
+
+    // --- Parte 2: As Pétalas ---
+    // Coordenadas de uma pétala "mestra"
+    QVector<Ponto> coordsPetalaMestra = {
+        Ponto(0, 0), Ponto(-15, 30), Ponto(0, 50), Ponto(15, 30)
+};
+
+// Cria 6 pétalas, rotacionando a pétala mestra
+for (int i = 0; i < 6; ++i) {
+    ObjetoVirtual petala;
+    petala.nome = QString(nome_base + " - Pétala %1").arg(i + 1);
+    petala.tipo = TipoObjeto::Poligono;
+    petala.cor = Qt::red;
+
+    double anguloRotacao = i * 60.0; // Rotaciona cada pétala em 60 graus
+
+    // Cria a matriz de rotação para esta pétala
+    Matriz R = Matriz::criarMatrizRotacao(anguloRotacao);
+
+    for (const auto& p_mestra : coordsPetalaMestra) {
+        Ponto p_rotacionada = Ponto(R * p_mestra);
+        petala.pontos.append(Ponto(p_rotacionada.x() + x_centro, p_rotacionada.y() + y_centro));
+    }
+    partesDaFlor.append(petala);
+}
+
+return partesDaFlor;
+}
+
+QVector<ObjetoVirtual> MainWindow::criarPikachu(double x_centro, double y_centro, const QString& nome_base) {
+    QVector<ObjetoVirtual> partesPikachu;
+    double escala = 1.5; // Fator de escala para ajustar o tamanho do desenho
+
+    // --- Parte 1: Corpo (Polígono principal) ---
+    ObjetoVirtual corpo;
+    corpo.nome = nome_base + " - Corpo";
+    corpo.tipo = TipoObjeto::Poligono;
+    corpo.cor = QColor("#FFDE00"); // Amarelo Pikachu
+
+    QVector<Ponto> coordsCorpo = {
+        Ponto(0,-60), Ponto(-25,-58), Ponto(-45,-50), Ponto(-60,-35), Ponto(-70,-15),
+        Ponto(-75,10), Ponto(-70,30), Ponto(-55,50), Ponto(-35,65), Ponto(-20,70),
+        Ponto(0,72), Ponto(20,70), Ponto(35,65), Ponto(55,50), Ponto(70,30),
+        Ponto(75,10), Ponto(70,-15), Ponto(60,-35), Ponto(45,-50), Ponto(25,-58)
+    };
+    for (const auto& p : coordsCorpo) {
+        corpo.pontos.append(Ponto(p.x() * escala + x_centro, p.y() * escala + y_centro));
+    }
+    partesPikachu.append(corpo);
+
+    // --- Parte 2: Orelhas ---
+    ObjetoVirtual orelhaEsq, orelhaDir;
+    orelhaEsq.nome = nome_base + " - Orelha Esq"; orelhaDir.nome = nome_base + " - Orelha Dir";
+    orelhaEsq.tipo = orelhaDir.tipo = TipoObjeto::Poligono;
+    orelhaEsq.cor = orelhaDir.cor = Qt::black;
+
+    QVector<Ponto> coordsOrelha = { Ponto(-35,65), Ponto(-45,100), Ponto(-30,95) };
+    for (const auto& p : coordsOrelha) {
+        orelhaEsq.pontos.append(Ponto(p.x() * escala + x_centro, p.y() * escala + y_centro));
+        orelhaDir.pontos.append(Ponto(-p.x() * escala + x_centro, p.y() * escala + y_centro)); // Espelha para a direita
+    }
+    partesPikachu.append(orelhaEsq);
+    partesPikachu.append(orelhaDir);
+
+    // --- Parte 3: Bochechas ---
+    ObjetoVirtual bochechaEsq, bochechaDir;
+    bochechaEsq.nome = nome_base + " - Bochecha Esq"; bochechaDir.nome = nome_base + " - Bochecha Dir";
+    bochechaEsq.tipo = bochechaDir.tipo = TipoObjeto::Poligono;
+    bochechaEsq.cor = bochechaDir.cor = Qt::red;
+
+    for(int i = 0; i < 8; ++i) {
+        double angulo = i * (360.0/8.0) * M_PI / 180.0;
+        double raio = 10.0 * escala;
+        double centroBochechaX = 50.0 * escala;
+        double centroBochechaY = 15.0 * escala;
+        bochechaEsq.pontos.append(Ponto(raio*cos(angulo) - centroBochechaX + x_centro, raio*sin(angulo) + centroBochechaY + y_centro));
+        bochechaDir.pontos.append(Ponto(raio*cos(angulo) + centroBochechaX + x_centro, raio*sin(angulo) + centroBochechaY + y_centro));
+    }
+    partesPikachu.append(bochechaEsq);
+    partesPikachu.append(bochechaDir);
+
+    // --- Parte 4: Rabo ---
+    ObjetoVirtual rabo;
+    rabo.nome = nome_base + " - Rabo";
+    rabo.tipo = TipoObjeto::Poligono;
+    rabo.cor = QColor("#FFDE00");
+
+    QVector<Ponto> coordsRabo = {
+        Ponto(-70,-15), Ponto(-90,-30), Ponto(-80,-40), Ponto(-110,-55),
+        Ponto(-100,-65), Ponto(-130,-80), Ponto(-120,-90), Ponto(-110,-80),
+        Ponto(-80,-65), Ponto(-90,-55), Ponto(-60,-40), Ponto(-70,-25)
+    };
+    for (const auto& p : coordsRabo) {
+        rabo.pontos.append(Ponto(p.x() * escala + x_centro, p.y() * escala + y_centro));
+    }
+    partesPikachu.append(rabo);
+
+    return partesPikachu;
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::ajustarWindowParaCena()
 {
@@ -382,51 +473,68 @@ void MainWindow::on_rotationEixoButton_clicked()
 
 void MainWindow::on_panUpButton_clicked()
 {
-    // Pega o nosso objeto Window pelo índice que guardámos
+    if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    // Aplica a translação diretamente no objeto
-    windowObj.transladar(0, -10); // Move a "câmera" para cima
+    double anguloGraus = windowObj.getAnguloEmGraus();
+    double anguloRadianos = anguloGraus * M_PI / 180.0;
+    double passo = 10.0; // O "para a frente" da câmera
 
-    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
+    // A translação no mundo é baseada na rotação da câmera
+    double dx = -passo * std::sin(anguloRadianos);
+    double dy = passo * std::cos(anguloRadianos);
+
+    windowObj.transladar(dx, dy);
+    ui->TelaDesenho->update();
 }
-
-
-void MainWindow::on_panRightButton_clicked()
-{
-    // Pega o nosso objeto Window pelo índice que guardámos
-    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
-
-    // Aplica a translação diretamente no objeto
-    windowObj.transladar(10, 0); // Move a "câmera" para cima
-
-    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
-}
-
-
-
 
 void MainWindow::on_panDownButton_clicked()
 {
-    // Pega o nosso objeto Window pelo índice que guardámos
+    if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    // Aplica a translação diretamente no objeto
-    windowObj.transladar(0, 10); // Move a "câmera" para cima
+    double anguloGraus = windowObj.getAnguloEmGraus();
+    double anguloRadianos = anguloGraus * M_PI / 180.0;
+    double passo = -10.0; // O "para trás" da câmera
 
-    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
+    double dx = -passo * std::sin(anguloRadianos);
+    double dy = passo * std::cos(anguloRadianos);
+
+    windowObj.transladar(dx, dy);
+    ui->TelaDesenho->update();
 }
 
+void MainWindow::on_panRightButton_clicked()
+{
+    if (indiceDaWindow == -1) return;
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    double anguloGraus = windowObj.getAnguloEmGraus();
+    double anguloRadianos = anguloGraus * M_PI / 180.0;
+    double passo = 10.0; // O "para a direita" da câmera
+
+    // Para mover para a direita local, o vetor é (passo * cos, passo * sin)
+    double dx = passo * std::cos(anguloRadianos);
+    double dy = passo * std::sin(anguloRadianos);
+
+    windowObj.transladar(dx, dy);
+    ui->TelaDesenho->update();
+}
 
 void MainWindow::on_panLeftButton_clicked()
 {
-    // Pega o nosso objeto Window pelo índice que guardámos
+    if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    // Aplica a translação diretamente no objeto
-    windowObj.transladar(-10, 0); // Move a "câmera" para cima
+    double anguloGraus = windowObj.getAnguloEmGraus();
+    double anguloRadianos = anguloGraus * M_PI / 180.0;
+    double passo = -10.0; // O "para a esquerda" da câmera
 
-    ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
+    double dx = passo * std::cos(anguloRadianos);
+    double dy = passo * std::sin(anguloRadianos);
+
+    windowObj.transladar(dx, dy);
+    ui->TelaDesenho->update();
 }
 
 

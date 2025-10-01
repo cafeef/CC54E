@@ -33,6 +33,23 @@ public:
     QVector <Ponto> pontos; //um vetor de classe Ponto
     QColor cor; //cor do objeto
 
+    double getAnguloEmGraus() const
+    {
+        // Se não tivermos pontos suficientes para definir um ângulo, retorna 0
+        if (pontos.size() < 2) {
+            return 0.0;
+        }
+
+        // Calcula o ângulo da primeira aresta do objeto (p0 -> p1)
+        const Ponto& p0 = pontos[0];
+        const Ponto& p1 = pontos[1];
+        double dy = p1.y() - p0.y();
+        double dx = p1.x() - p0.x();
+
+        // atan2 nos dá o ângulo em radianos, convertemos para graus
+        return std::atan2(dy, dx) * 180.0 / M_PI;
+    }
+
     //Métodos das transformações
     void transladar(double dx, double dy) {
         for(int i = 0; i < pontos.size(); i++) {
