@@ -6,6 +6,7 @@
 #include <vector> // Para std::vector
 #include <QString>
 #include <QTimer>
+QVector<ObjetoVirtual> criarBolaPixar(double x_centro, double y_centro, const QString& nome_base);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
     QVector<ObjetoVirtual> pikachu = criarPikachu(0, -200, "Pikachu");
     displayFile.append(pikachu);
 
+    QVector<ObjetoVirtual> bolaPixar = criarBolaPixar(250, 200, "Bola Pixar");
+    displayFile.append(bolaPixar);
+
 
     ui->TelaDesenho->setDisplayFile(&displayFile);
 
@@ -47,9 +51,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Percorrendo o displayFile para adicionar os objetos no combobox (seleção de objetos a serem alterados)
-    for (int i = 0; i < displayFile.size(); i++) {
-        ui->objectSelectorComboBox->addItem(displayFile[i].nome);
+  ui->objectSelectorComboBox->clear();
+
+QStringList nomesAdicionados; // Lista para controlar nomes já adicionados
+
+for (const ObjetoVirtual &objeto : displayFile) {
+    QString nomeBase = objeto.nome.split(" - ").first(); // Pega a parte antes de " - "
+
+    // Adiciona o nome base APENAS se ainda não estiver na lista
+    if (!nomesAdicionados.contains(nomeBase)) {
+        ui->objectSelectorComboBox->addItem(nomeBase);
+        nomesAdicionados.append(nomeBase);
     }
+}
 
 }
 
@@ -274,49 +288,47 @@ void MainWindow::ajustarWindowParaCena()
     windowObj.pontos.append(Ponto(centroX + larguraCena / 2, centroY + alturaCena / 2));
     windowObj.pontos.append(Ponto(centroX - larguraCena / 2, centroY + alturaCena / 2));
 }
-
 void MainWindow::on_translateButton_clicked()
 {
-    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
-    if (indiceSelecionado < 0) return; // Proteção para evitar crash
+    // 1. Nome do objeto selecionado (ex: "Bola Pixar")
+    QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
+    if (nomeBaseSelecionado.isEmpty()) return;
 
-    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    // 2. Pega o ângulo atual da câmera (window)
+    double anguloCameraGraus = displayFile[indiceDaWindow].getAnguloEmGraus();
+    double anguloCameraRad = anguloCameraGraus * M_PI / 180.0;
 
-    // Alvos finais da translação
+    // 3. Pega os valores desejados de translação (em pixels)
     double dx_final = ui->translateXSpinBox->value();
     double dy_final = ui->translateYSpinBox->value();
 
-    // --- Nova Lógica de Animação ---
+    // 4. Converte a translação para o eixo LOCAL da câmera
+    double dx_corrigido = dx_final * cos(anguloCameraRad) - dy_final * sin(anguloCameraRad);
+    double dy_corrigido = dx_final * sin(anguloCameraRad) + dy_final * cos(anguloCameraRad);
 
-    const int duracao_ms = 1000; // Duração total da animação (1 segundo)
-    const int intervalo_ms = 20; // Atualizar a cada 20ms (50 frames por segundo)
+    // 5. Configura a animação
+    const int duracao_ms = 1000;
+    const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
-
-    // Calcula o pequeno passo a ser dado em cada intervalo para X e Y
-    // Funciona para valores positivos e negativos!
-    double passo_x = dx_final / passos_totais;
-    double passo_y = dy_final / passos_totais;
-
-    // Usamos um contador para saber quando parar
+    double passo_x = dx_corrigido / passos_totais;
+    double passo_y = dy_corrigido / passos_totais;
     int passos_dados = 0;
 
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [=, &objetoSelecionado]() mutable {
-        // Condição de parada: já demos todos os passos?
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
         if (passos_dados >= passos_totais) {
             timer->stop();
             timer->deleteLater();
-            // Opcional: garantir que o objeto está na posição exata no final
-            // (pode haver pequenos erros de arredondamento)
-            // objetoSelecionado.transladar(dx_final - (passo_x * passos_dados), ...);
             return;
         }
 
-        // APLICA O PASSO PEQUENO E CONSTANTE
-        // O sinal negativo no passo_y é para corresponder à coordenada Y da tela (que cresce para baixo)
-        objetoSelecionado.transladar(passo_x, -passo_y);
+        // 6. Aplica a translação em todos os objetos que compartilham o mesmo prefixo
+        for (ObjetoVirtual &objeto : displayFile) {
+            if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+                objeto.transladar(passo_x, -passo_y); // "-passo_y" mantém o eixo Y da tela
+            }
+        }
 
-        // Atualiza o contador e a tela
         passos_dados++;
         ui->TelaDesenho->update();
     });
@@ -326,35 +338,41 @@ void MainWindow::on_translateButton_clicked()
 
 void MainWindow::on_escaleButton_clicked()
 {
-    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
-    if (indiceSelecionado < 0) return;
+    // 1. Pega o NOME do objeto selecionado (ex: "Pikachu"), e não mais o índice.
+    QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
+    if (nomeBaseSelecionado.isEmpty() || nomeBaseSelecionado == "#WINDOW_CAMERA") return; // Proteção
 
-    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    // Pega os valores da interface
     double sx_final = ui->escaleXSpinBox->value();
     double sy_final = ui->escaleYSpinBox->value();
 
-    // Configurações da animação
-    const int duracao_ms = 1000; // 1 segundo
-    const int intervalo_ms = 20;  // 50 FPS
+    // Lógica da animação (continua a mesma)
+    const int duracao_ms = 1000;
+    const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
-
-    // Calcula o fator multiplicativo para cada passo.
-    // Isso funciona para aumentar (sx > 1) e diminuir (sx < 1) a escala.
     double fator_x_passo = pow(sx_final, 1.0 / passos_totais);
     double fator_y_passo = pow(sy_final, 1.0 / passos_totais);
-
     int passos_dados = 0;
-    QTimer *timer = new QTimer(this);
 
-    connect(timer, &QTimer::timeout, this, [=, &objetoSelecionado]() mutable {
+    QTimer *timer = new QTimer(this);
+    // Note que não precisamos mais capturar "&objetoSelecionado" aqui
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
         if (passos_dados >= passos_totais) {
             timer->stop();
             timer->deleteLater();
             return;
         }
 
-        // Aplica o pequeno fator de escala incremental
-        objetoSelecionado.escalonar(fator_x_passo, fator_y_passo);
+        // 2. Itera por TODOS os objetos no displayFile.
+        for (ObjetoVirtual &objeto : displayFile) {
+            
+            // 3. Verifica se o nome do objeto COMEÇA com o nome selecionado.
+            if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+                
+                // 4. Se começar, aplica a transformação de escala.
+                objeto.escalonar(fator_x_passo, fator_y_passo);
+            }
+        }
 
         passos_dados++;
         ui->TelaDesenho->update();
@@ -365,30 +383,36 @@ void MainWindow::on_escaleButton_clicked()
 
 void MainWindow::on_rotationButton_clicked()
 {
-    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
-    if (indiceSelecionado < 0) return;
+    // Pega o NOME do objeto selecionado
+    QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
+     if (nomeBaseSelecionado.isEmpty()) return;
 
-    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    // Pega os valores da interface
     double anguloFinal = ui->rotationAngleSpinBox->value();
 
-    // Configurações da animação
-    const int duracao_ms = 1000; // 1 segundo
-    const int intervalo_ms = 20;  // 50 FPS
+    // Lógica da animação
+    const int duracao_ms = 1000;
+    const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
-    double passo_angulo = anguloFinal / passos_totais; // Funciona para ângulos positivos e negativos
-
+    double passo_angulo = anguloFinal / passos_totais;
     int passos_dados = 0;
-    QTimer *timer = new QTimer(this);
 
-    connect(timer, &QTimer::timeout, this, [=, &objetoSelecionado]() mutable {
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
         if (passos_dados >= passos_totais) {
             timer->stop();
             timer->deleteLater();
             return;
         }
 
-        // Aplica a pequena rotação incremental
-        objetoSelecionado.rotacionar(passo_angulo);
+        // Itera por TODOS os objetos no displayFile
+        for (ObjetoVirtual &objeto : displayFile) {
+            // Se o nome do objeto COMEÇA com o nome selecionado...
+            if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+                // ...aplica a transformação de rotação!
+                objeto.rotacionar(passo_angulo);
+            }
+        }
 
         passos_dados++;
         ui->TelaDesenho->update();
@@ -400,34 +424,38 @@ void MainWindow::on_rotationButton_clicked()
 
 void MainWindow::on_escaleEixoButton_clicked()
 {
-    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
-    if (indiceSelecionado < 0) return;
+    // Pega o NOME do objeto selecionado
+    QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
+    if (nomeBaseSelecionado.isEmpty()) return;
 
-    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    // Pega os valores da interface
     double sx_final = ui->escaleXSpinBox->value();
     double sy_final = ui->escaleYSpinBox->value();
 
-    // Configurações da animação
-    const int duracao_ms = 1000; // 1 segundo
-    const int intervalo_ms = 20;  // 50 FPS
+    // Lógica da animação
+    const int duracao_ms = 1000;
+    const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
-
-    // Calcula o fator multiplicativo para cada passo
     double fator_x_passo = pow(sx_final, 1.0 / passos_totais);
     double fator_y_passo = pow(sy_final, 1.0 / passos_totais);
-
     int passos_dados = 0;
-    QTimer *timer = new QTimer(this);
 
-    connect(timer, &QTimer::timeout, this, [=, &objetoSelecionado]() mutable {
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
         if (passos_dados >= passos_totais) {
             timer->stop();
             timer->deleteLater();
             return;
         }
 
-        // Aplica o pequeno fator de escala incremental no eixo do objeto
-        objetoSelecionado.escalonarEixo(fator_x_passo, fator_y_passo);
+        // Itera por TODOS os objetos no displayFile
+        for (ObjetoVirtual &objeto : displayFile) {
+            // Se o nome do objeto COMEÇA com o nome selecionado...
+            if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+                // ...aplica a transformação de escala no próprio eixo!
+                objeto.escalonarEixo(fator_x_passo, fator_y_passo);
+            }
+        }
 
         passos_dados++;
         ui->TelaDesenho->update();
@@ -439,30 +467,36 @@ void MainWindow::on_escaleEixoButton_clicked()
 
 void MainWindow::on_rotationEixoButton_clicked()
 {
-    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
-    if (indiceSelecionado < 0) return;
+    // Pega o NOME do objeto selecionado
+    QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
+    if (nomeBaseSelecionado.isEmpty()) return;
 
-    ObjetoVirtual &objetoSelecionado = displayFile[indiceSelecionado];
+    // Pega os valores da interface
     double anguloFinal = ui->rotationAngleSpinBox->value();
 
-    // Configurações da animação
-    const int duracao_ms = 1000; // 1 segundo
-    const int intervalo_ms = 20;  // 50 FPS
+    // Lógica da animação
+    const int duracao_ms = 1000;
+    const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
     double passo_angulo = anguloFinal / passos_totais;
-
     int passos_dados = 0;
-    QTimer *timer = new QTimer(this);
 
-    connect(timer, &QTimer::timeout, this, [=, &objetoSelecionado]() mutable {
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() mutable {
         if (passos_dados >= passos_totais) {
             timer->stop();
             timer->deleteLater();
             return;
         }
 
-        // Aplica a pequena rotação incremental no eixo do objeto
-        objetoSelecionado.rotacionarEixo(passo_angulo);
+        // Itera por TODOS os objetos no displayFile
+        for (ObjetoVirtual &objeto : displayFile) {
+            // Se o nome do objeto COMEÇA com o nome selecionado...
+            if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+                // ...aplica a transformação de rotação no próprio eixo!
+                objeto.rotacionarEixo(passo_angulo);
+            }
+        }
 
         passos_dados++;
         ui->TelaDesenho->update();
@@ -476,29 +510,30 @@ void MainWindow::on_panUpButton_clicked()
     if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    double anguloGraus = windowObj.getAnguloEmGraus();
-    double anguloRadianos = anguloGraus * M_PI / 180.0;
-    double passo = 10.0; // O "para a frente" da câmera
+    double angulo = windowObj.getAnguloEmGraus() * M_PI / 180.0;
+    double passo = 10.0;
 
-    // A translação no mundo é baseada na rotação da câmera
-    double dx = -passo * std::sin(anguloRadianos);
-    double dy = passo * std::cos(anguloRadianos);
+    // Subir no eixo local da câmera
+    double dx = passo * sin(angulo);
+    double dy = passo * cos(angulo);
 
     windowObj.transladar(dx, dy);
     ui->TelaDesenho->update();
 }
+
+
 
 void MainWindow::on_panDownButton_clicked()
 {
     if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    double anguloGraus = windowObj.getAnguloEmGraus();
-    double anguloRadianos = anguloGraus * M_PI / 180.0;
-    double passo = -10.0; // O "para trás" da câmera
+    double angulo = windowObj.getAnguloEmGraus() * M_PI / 180.0;
+    double passo = 10.0;
 
-    double dx = -passo * std::sin(anguloRadianos);
-    double dy = passo * std::cos(anguloRadianos);
+    // Descer no eixo local da câmera
+    double dx = -passo * sin(angulo);
+    double dy = -passo * cos(angulo);
 
     windowObj.transladar(dx, dy);
     ui->TelaDesenho->update();
@@ -509,33 +544,34 @@ void MainWindow::on_panRightButton_clicked()
     if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    double anguloGraus = windowObj.getAnguloEmGraus();
-    double anguloRadianos = anguloGraus * M_PI / 180.0;
-    double passo = 10.0; // O "para a direita" da câmera
+    double angulo = windowObj.getAnguloEmGraus() * M_PI / 180.0;
+    double passo = 10.0;
 
-    // Para mover para a direita local, o vetor é (passo * cos, passo * sin)
-    double dx = passo * std::cos(anguloRadianos);
-    double dy = passo * std::sin(anguloRadianos);
+    // Direita local (giro +90°)
+    double dx = passo * cos(angulo);
+    double dy = -passo * sin(angulo);
 
     windowObj.transladar(dx, dy);
     ui->TelaDesenho->update();
 }
+
 
 void MainWindow::on_panLeftButton_clicked()
 {
     if (indiceDaWindow == -1) return;
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
-    double anguloGraus = windowObj.getAnguloEmGraus();
-    double anguloRadianos = anguloGraus * M_PI / 180.0;
-    double passo = -10.0; // O "para a esquerda" da câmera
+    double angulo = windowObj.getAnguloEmGraus() * M_PI / 180.0;
+    double passo = 10.0;
 
-    double dx = passo * std::cos(anguloRadianos);
-    double dy = passo * std::sin(anguloRadianos);
+    // Esquerda local (giro -90°)
+    double dx = -passo * cos(angulo);
+    double dy = passo * sin(angulo);
 
     windowObj.transladar(dx, dy);
     ui->TelaDesenho->update();
 }
+
 
 
 void MainWindow::on_zoomInButton_clicked()
@@ -585,3 +621,51 @@ void MainWindow::on_rotateLeftButton_clicked()
     ui->TelaDesenho->update(); // Manda redesenhar com a câmera na nova posição
 }
 
+QVector<ObjetoVirtual> criarBolaPixar(double x_centro, double y_centro, const QString& nome_base) {
+    QVector<ObjetoVirtual> partesBola;
+
+    // --- Parte 1: Corpo principal (círculo azul claro) ---
+    ObjetoVirtual corpo;
+    corpo.nome = nome_base + " - Corpo";
+    corpo.tipo = TipoObjeto::Poligono;
+    corpo.cor = QColor("#5DADE2"); // Azul Pixar
+
+    int lados = 36; // quantidade de lados para simular o círculo
+    double raio = 50.0;
+    for (int i = 0; i < lados; ++i) {
+        double ang = i * (2 * M_PI / lados);
+        corpo.pontos.append(Ponto(raio * cos(ang) + x_centro, raio * sin(ang) + y_centro));
+    }
+    partesBola.append(corpo);
+
+    // --- Parte 2: Faixa amarela ---
+    ObjetoVirtual faixa;
+    faixa.nome = nome_base + " - Faixa";
+    faixa.tipo = TipoObjeto::Poligono;
+    faixa.cor = QColor("#F4D03F"); // Amarelo Pixar
+
+    double raioInterno = 25.0;
+    for (int i = 0; i < lados; ++i) {
+        double ang = i * (2 * M_PI / lados);
+        faixa.pontos.append(Ponto(raioInterno * cos(ang) + x_centro, raioInterno * sin(ang) + y_centro));
+    }
+    partesBola.append(faixa);
+
+    // --- Parte 3: Estrela vermelha ---
+    ObjetoVirtual estrela;
+    estrela.nome = nome_base + " - Estrela";
+    estrela.tipo = TipoObjeto::Poligono;
+    estrela.cor = QColor("#E74C3C"); // Vermelho
+
+    double raioExterno = 20.0;
+    double raioInternoEstrela = 8.0;
+    int pontas = 5;
+    for (int i = 0; i < 2 * pontas; ++i) {
+        double ang = i * (M_PI / pontas);
+        double r = (i % 2 == 0) ? raioExterno : raioInternoEstrela;
+        estrela.pontos.append(Ponto(r * cos(ang) + x_centro, r * sin(ang) + y_centro));
+    }
+    partesBola.append(estrela);
+
+    return partesBola;
+}

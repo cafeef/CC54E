@@ -74,7 +74,7 @@ public:
         Matriz R = Matriz::MatrizCompostaEscala(sx, sy, centro.x(), centro.y());
         for(int i = 0; i < pontos.size(); i++) {
             pontos[i] = Ponto(R * pontos[i]);
-            printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
+            //printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
         }
     }
 
@@ -83,7 +83,7 @@ public:
         Matriz R = Matriz::MatrizCompostaRotacao(anguloEmGraus, centro.x(), centro.y());
         for(int i = 0; i < pontos.size(); i++) {
             pontos[i] = Ponto(R * pontos[i]);
-            printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
+            //printf("Novo ponto: (%.1f, %.1f)\n", pontos[i].x(), pontos[i].y());
         }
     }
 
