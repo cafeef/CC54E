@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     // --- Exemplo de criação de objetos ---
     //declaração de coordenadas, uma lista de pontos que um desenho tem. vai servir para atribuir a matriz em PontoMatriz
     // Cria uma casa completa na posição (200, 200)
-    QVector<ObjetoVirtual> casa = criarCasaCompleta(200, 200, "Casa de Campo");
+    QVector<ObjetoVirtual> casa = criarCasaCompleta(300, 300, "Casa de Campo");
     displayFile.append(casa);
 
     // Cria uma flor na posição (-150, 100)
@@ -42,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVector<ObjetoVirtual> bolaPixar = criarBolaPixar(250, 200, "Bola Pixar");
     displayFile.append(bolaPixar);
+
+    QVector<ObjetoVirtual> cogumelo = criarCog(-500, -500, "Cogumelo");
+    displayFile.append(cogumelo);
 
 
     ui->TelaDesenho->setDisplayFile(&displayFile);
@@ -65,6 +68,101 @@ for (const ObjetoVirtual &objeto : displayFile) {
     }
 }
 
+}
+
+QVector<ObjetoVirtual> MainWindow::criarCog(double x_centro, double y_centro, const QString& nome_base) {
+    QVector<ObjetoVirtual> partesCogumelo;
+
+    // --- Parte 1: Chapéu (Vermelho) ---
+    ObjetoVirtual chapeu;
+    chapeu.nome = nome_base + " - chapeu";
+    chapeu.tipo = TipoObjeto::Poligono;
+    chapeu.cor = Qt::red;
+
+    QVector<Ponto> coordsChapeu = {
+        Ponto(128, -64), Ponto(128, 32), Ponto(112, 32), Ponto(112, 48), Ponto(80, 80),
+        Ponto(64, 96), Ponto(32, 128), Ponto(-32, 128), Ponto(-64, 96), Ponto(-80, 80),
+        Ponto(-112, 48), Ponto(-112, 32), Ponto(-128, 32), Ponto(-128, -64)
+    };
+    for (const auto& p : coordsChapeu) {
+        chapeu.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(chapeu);
+
+    // --- Parte 2: Caule (Branco/Bege) ---
+    ObjetoVirtual caule;
+    caule.nome = nome_base + " - caule";
+    caule.tipo = TipoObjeto::Poligono;
+    caule.cor = QColor(255, 235, 205);
+
+    QVector<Ponto> coordsCaule = {
+        Ponto(0, -160), Ponto(48, -160), Ponto(48, -144), Ponto(80, -144), Ponto(80, -112),
+        Ponto(112, -112), Ponto(112, -64), Ponto(-112, -64), Ponto(-112, -112), Ponto(-80, -112),
+        Ponto(-80, -144), Ponto(-48, -144), Ponto(-48, -160), Ponto(0, -160)
+    };
+    for (const auto& p : coordsCaule) {
+        caule.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(caule);
+
+    // --- Parte 3: Olhos (Preto) ---
+    ObjetoVirtual olhodir;
+    olhodir.nome = nome_base + " - olho direito";
+    olhodir.tipo = TipoObjeto::Poligono;
+    olhodir.cor = Qt::black;
+
+    QVector<Ponto> coordsOlhoDir = { Ponto(32, -80), Ponto(64, -80), Ponto(64, -112), Ponto(32, -112) };
+    for (const auto& p : coordsOlhoDir) {
+        olhodir.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(olhodir);
+
+    ObjetoVirtual olhoesq;
+    olhoesq.nome = nome_base + " - olho esquerdo";
+    olhoesq.tipo = TipoObjeto::Poligono;
+    olhoesq.cor = Qt::black;
+
+    QVector<Ponto> coordsOlhoEsq = { Ponto(-64, -80), Ponto(-32, -80), Ponto(-32, -112), Ponto(-64, -112) };
+    for (const auto& p : coordsOlhoEsq) {
+        olhoesq.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(olhoesq);
+
+    // --- Parte 4: Manchas (Branco) ---
+    ObjetoVirtual manchasup;
+    manchasup.nome = nome_base + " - Mancha superior";
+    manchasup.tipo = TipoObjeto::Poligono;
+    manchasup.cor = Qt::white;
+
+    QVector<Ponto> coordsManchaSup = { Ponto(-32, 64), Ponto(32, 64), Ponto(32, 32), Ponto(-32, 32) };
+    for (const auto& p : coordsManchaSup) {
+        manchasup.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(manchasup);
+
+    ObjetoVirtual manchaesq;
+    manchaesq.nome = nome_base + " - mancha esquerda";
+    manchaesq.tipo = TipoObjeto::Poligono;
+    manchaesq.cor = Qt::white;
+
+    QVector<Ponto> coordsManchaEsq = { Ponto(-80, 16), Ponto(-48, 16), Ponto(-48, -16), Ponto(-80, -16) };
+    for (const auto& p : coordsManchaEsq) {
+        manchaesq.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(manchaesq);
+
+    ObjetoVirtual manchadir;
+    manchadir.nome = nome_base + " - mancha direita";
+    manchadir.tipo = TipoObjeto::Poligono;
+    manchadir.cor = Qt::white;
+
+    QVector<Ponto> coordsManchaDir = { Ponto(48, 16), Ponto(80, 16), Ponto(80, -16), Ponto(48, -16) };
+    for (const auto& p : coordsManchaDir) {
+        manchadir.pontos.append(Ponto(p.x() + x_centro, p.y() + y_centro));
+    }
+    partesCogumelo.append(manchadir);
+
+    return partesCogumelo;
 }
 
 QVector<ObjetoVirtual> MainWindow::criarCasaCompleta(double x_centro, double y_centro, const QString& nome_base) {
@@ -175,7 +273,7 @@ QVector<ObjetoVirtual> MainWindow::criarPikachu(double x_centro, double y_centro
     ObjetoVirtual orelhaEsq, orelhaDir;
     orelhaEsq.nome = nome_base + " - Orelha Esq"; orelhaDir.nome = nome_base + " - Orelha Dir";
     orelhaEsq.tipo = orelhaDir.tipo = TipoObjeto::Poligono;
-    orelhaEsq.cor = orelhaDir.cor = Qt::black;
+    orelhaEsq.cor = orelhaDir.cor = QColor("#FFDE00");
 
     QVector<Ponto> coordsOrelha = { Ponto(-35,65), Ponto(-45,100), Ponto(-30,95) };
     for (const auto& p : coordsOrelha) {
@@ -424,15 +522,31 @@ void MainWindow::on_rotationButton_clicked()
 
 void MainWindow::on_escaleEixoButton_clicked()
 {
-    // Pega o NOME do objeto selecionado
     QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
-    if (nomeBaseSelecionado.isEmpty()) return;
+    if (nomeBaseSelecionado.isEmpty() || nomeBaseSelecionado == "#WINDOW_CAMERA") return;
 
-    // Pega os valores da interface
+    // --- PASSO 1: Encontrar o centro comum (mesma lógica da rotação) ---
+    QVector<Ponto> todosOsPontosDoObjeto;
+    for (const ObjetoVirtual &objeto : displayFile) {
+        if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+            todosOsPontosDoObjeto.append(objeto.pontos);
+        }
+    }
+    if (todosOsPontosDoObjeto.isEmpty()) return;
+    double minX = todosOsPontosDoObjeto[0].x(), maxX = minX;
+    double minY = todosOsPontosDoObjeto[0].y(), maxY = minY;
+    for (const Ponto &p : todosOsPontosDoObjeto) {
+        if (p.x() < minX) minX = p.x();
+        if (p.x() > maxX) maxX = p.x();
+        if (p.y() < minY) minY = p.y();
+        if (p.y() > maxY) maxY = p.y();
+    }
+    Ponto centroComum((minX + maxX) / 2.0, (minY + maxY) / 2.0);
+    // --------------------------------------------------------------------
+
+    // --- PASSO 2: Configurar a animação ---
     double sx_final = ui->escaleXSpinBox->value();
     double sy_final = ui->escaleYSpinBox->value();
-
-    // Lógica da animação
     const int duracao_ms = 1000;
     const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
@@ -448,14 +562,22 @@ void MainWindow::on_escaleEixoButton_clicked()
             return;
         }
 
-        // Itera por TODOS os objetos no displayFile
+        // --- PASSO 3: Construir UMA matriz de transformação usando o centro comum ---
+        Matriz T_ida = Matriz::criarMatrizTranslacao(-centroComum.x(), -centroComum.y());
+        Matriz S_passo = Matriz::criarMatrizEscala(fator_x_passo, fator_y_passo);
+        Matriz T_volta = Matriz::criarMatrizTranslacao(centroComum.x(), centroComum.y());
+        Matriz M_passo = T_volta * S_passo * T_ida;
+        // -------------------------------------------------------------------------
+
+        // --- PASSO 4: Aplicar a MESMA matriz a todas as partes ---
         for (ObjetoVirtual &objeto : displayFile) {
-            // Se o nome do objeto COMEÇA com o nome selecionado...
             if (objeto.nome.startsWith(nomeBaseSelecionado)) {
-                // ...aplica a transformação de escala no próprio eixo!
-                objeto.escalonarEixo(fator_x_passo, fator_y_passo);
+                for (Ponto &p : objeto.pontos) {
+                    p = Ponto(M_passo * p);
+                }
             }
         }
+        // -----------------------------------------------------------------
 
         passos_dados++;
         ui->TelaDesenho->update();
@@ -467,14 +589,32 @@ void MainWindow::on_escaleEixoButton_clicked()
 
 void MainWindow::on_rotationEixoButton_clicked()
 {
-    // Pega o NOME do objeto selecionado
     QString nomeBaseSelecionado = ui->objectSelectorComboBox->currentText();
-    if (nomeBaseSelecionado.isEmpty()) return;
+    if (nomeBaseSelecionado.isEmpty() || nomeBaseSelecionado == "#WINDOW_CAMERA") return;
 
-    // Pega os valores da interface
+    // --- PASSO 1: Encontrar o centro comum de TODAS as partes do objeto ---
+    QVector<Ponto> todosOsPontosDoObjeto;
+    for (const ObjetoVirtual &objeto : displayFile) {
+        if (objeto.nome.startsWith(nomeBaseSelecionado)) {
+            todosOsPontosDoObjeto.append(objeto.pontos);
+        }
+    }
+    if (todosOsPontosDoObjeto.isEmpty()) return;
+
+    // Calcula o centro a partir da bounding box de todos os pontos juntos
+    double minX = todosOsPontosDoObjeto[0].x(), maxX = minX;
+    double minY = todosOsPontosDoObjeto[0].y(), maxY = minY;
+    for (const Ponto &p : todosOsPontosDoObjeto) {
+        if (p.x() < minX) minX = p.x();
+        if (p.x() > maxX) maxX = p.x();
+        if (p.y() < minY) minY = p.y();
+        if (p.y() > maxY) maxY = p.y();
+    }
+    Ponto centroComum((minX + maxX) / 2.0, (minY + maxY) / 2.0);
+    // --------------------------------------------------------------------
+
+    // --- PASSO 2: Configurar a animação (sem alterações aqui) ---
     double anguloFinal = ui->rotationAngleSpinBox->value();
-
-    // Lógica da animação
     const int duracao_ms = 1000;
     const int intervalo_ms = 20;
     int passos_totais = duracao_ms / intervalo_ms;
@@ -489,14 +629,23 @@ void MainWindow::on_rotationEixoButton_clicked()
             return;
         }
 
-        // Itera por TODOS os objetos no displayFile
+        // --- PASSO 3: Construir UMA matriz de transformação usando o centro comum ---
+        Matriz T_ida = Matriz::criarMatrizTranslacao(-centroComum.x(), -centroComum.y());
+        Matriz R_passo = Matriz::criarMatrizRotacao(passo_angulo);
+        Matriz T_volta = Matriz::criarMatrizTranslacao(centroComum.x(), centroComum.y());
+        Matriz M_passo = T_volta * R_passo * T_ida;
+        // -------------------------------------------------------------------------
+
+        // --- PASSO 4: Aplicar a MESMA matriz a todas as partes do objeto ---
         for (ObjetoVirtual &objeto : displayFile) {
-            // Se o nome do objeto COMEÇA com o nome selecionado...
             if (objeto.nome.startsWith(nomeBaseSelecionado)) {
-                // ...aplica a transformação de rotação no próprio eixo!
-                objeto.rotacionarEixo(passo_angulo);
+                // Em vez de chamar objeto.rotacionarEixo, aplicamos a matriz diretamente
+                for (Ponto &p : objeto.pontos) {
+                    p = Ponto(M_passo * p);
+                }
             }
         }
+        // -----------------------------------------------------------------
 
         passos_dados++;
         ui->TelaDesenho->update();

@@ -20,6 +20,7 @@ public:
     ~MainWindow();
 
 private slots:
+    QVector<ObjetoVirtual> criarCog(double x_centro, double y_centro, const QString& nome_base);
     QVector<ObjetoVirtual> criarCasaCompleta(double x_centro, double y_centro, const QString& nome_base);
     QVector<ObjetoVirtual> criarFlor(double x_centro, double y_centro, const QString& nome_base);
     QVector<ObjetoVirtual> criarPikachu(double x_centro, double y_centro, const QString& nome_base);
