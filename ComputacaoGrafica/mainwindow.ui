@@ -29,8 +29,8 @@
      <rect>
       <x>1151</x>
       <y>10</y>
-      <width>331</width>
-      <height>529</height>
+      <width>336</width>
+      <height>565</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -202,16 +202,23 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QPushButton" name="rotationEixoButton">
+          <widget class="QPushButton" name="rotateXButton">
            <property name="text">
-            <string>Rotacionar no eixo</string>
+            <string>Rotacionar em X</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="rotationButton">
+          <widget class="QPushButton" name="rotateYButton">
            <property name="text">
-            <string>Rotacionar na origem</string>
+            <string>Rotacionar em Y</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rotateZButton">
+           <property name="text">
+            <string>Rotacionar em Z</string>
            </property>
           </widget>
          </item>
