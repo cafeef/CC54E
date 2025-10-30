@@ -158,7 +158,7 @@ void MainWindow::on_rotationEixoButton_clicked() {
     if (indice < 0) return;
 
     // Lê o ângulo do novo SpinBox
-    double angulo = ui->rotationAngleSpinBox->value();
+    double angulo = ui->rotationZSpinBox->value();
 
     // Verifica qual eixo está selecionado
     if (ui->rotateXButton->isChecked()) {
