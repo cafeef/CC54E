@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Pokemons/psyduck.obj</file>
+        <file>Pokemons/UmbreonHighPoly.obj</file>
+        <file>Pokemons/UmbreonLowPoly.obj</file>
+        <file>Pokemons/Pokeball_Obj.obj</file>
+    </qresource>
+</RCC>

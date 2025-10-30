@@ -42,3 +42,6 @@ DISTFILES += \
     UmbreonHighPoly.obj \
     UmbreonLowPoly.obj \
     psyduck.obj
+
+RESOURCES += \
+    recursos.qrc
