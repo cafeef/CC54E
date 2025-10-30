@@ -69,7 +69,11 @@ OBJECTS       = main.o \
 		qrc_qmake_qmake_qm_files.o \
 		moc_mainwindow.o \
 		moc_teladedesenho.o
-DIST          = /Users/fernanda/Qt/6.9.1/macos/mkspecs/features/spec_pre.prf \
+DIST          = ../../Pokeball_Obj.obj \
+		../../UmbreonHighPoly.obj \
+		../../UmbreonLowPoly.obj \
+		../../psyduck.obj \
+		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/spec_pre.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/device_config.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/common/unix.conf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/common/mac.conf \

@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // --- CARREGAR OS POKÉMONS ---
     // !!! MUDE ESTES CAMINHOS PARA ONDE VOCÊ GUARDOU OS SEUS FICHEIROS .obj !!!
-    QString caminhoPokebola = "Pokeball_Obj.obj";
+    QString caminhoPokebola = "Pokemons/Pokeball_Obj.obj";
 
     ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
 
