@@ -1,160 +1,95 @@
 #include "matriz.h"
+#include "ponto.h" // Inclui Ponto
+#include <cmath>
 
 Matriz::Matriz() {
-
+    // Inicializa como uma matriz identidade 4x4
+    dados = std::vector<std::vector<double>>(4, std::vector<double>(4, 0.0));
+    dados[0][0] = 1.0;
+    dados[1][1] = 1.0;
+    dados[2][2] = 1.0;
+    dados[3][3] = 1.0;
 }
 
-Matriz::Matriz(int linhas, int colunas) {
-    dados = QVector<QVector<double>>(linhas, QVector<double>(colunas, 0.0));
+Matriz Matriz::criarIdentidade() {
+    return Matriz();
 }
 
-void Matriz::imprimir() const
-{
-    printf("--- Matriz ---\n");
-    for (int i = 0; i < dados.size(); ++i) {
-        for (int j = 0; j < dados[i].size(); ++j) {
-            printf("%.2f\t", dados[i][j]); // Imprime cada elemento com 2 casas decimais
-        }
-        printf("\n"); // Nova linha para cada linha da matriz
-    }
-    printf("--------------\n");
-}
-
-Matriz Matriz::operator*(const Matriz &outra) const
-{
-    if (this->dados.isEmpty() || outra.dados.isEmpty()){
-        return {};
-    }
-
-    else {
-
-        int colunasA = this->dados[0].size();
-        int linhasB = outra.dados.size();
-
-
-        if (colunasA == linhasB){
-
-            int linhasA = this->dados.size();
-            int colunasB = outra.dados[0].size();
-
-            // Inicializa matriz resultado (linhasA x colunasB) com zeros
-            Matriz R = Matriz(linhasA, colunasB);
-
-            for (int i = 0; i < linhasA; i++) {
-                for (int j = 0; j < colunasB; j++) {
-                    for (int k = 0; k < colunasA; k++) {
-                        R.dados[i][j] += this->dados[i][k] * outra.dados[k][j];
-                    }
-                }
-            }
-
-            return R;
-        }
-
-        else{
-            return {};
-        }
-
-    }}
-
-QVector<QVector<double>> Matriz::getDados() const
-{
-    return dados;
-}
-
-Matriz Matriz::criarIdentidade()
-{
-    // Passo 1: Crie uma matriz 3x3 chamada 'identidade'
-    Matriz identidade = Matriz(3, 3);
-
-    // Passo 2: Use um for loop para percorrer a diagonal
-    for (int i = 0; i < 3; i++) {
-        identidade.dados[i][i] = 1.0; // Modifica só a diagonal
-    }
-
-    // Passo 3: Retorne a matriz
-    return identidade;
-}
-
-Matriz Matriz::criarMatrizTranslacao(double dx, double dy)
-{
-    // Passo 1: Comece com uma matriz identidade
-    Matriz T = Matriz::criarIdentidade();
-
-    // Passo 2: Altere as células corretas para receber dx e dy
-    T.dados[0][2] = dx;
-    T.dados[1][2] = dy;
-
-    // Passo 3: Retorne a matriz de translação
+Matriz Matriz::criarMatrizTranslacao(double dx, double dy, double dz) {
+    Matriz T; // Começa como identidade
+    T.dados[0][3] = dx;
+    T.dados[1][3] = dy;
+    T.dados[2][3] = dz;
     return T;
 }
 
-Matriz Matriz::criarMatrizEscala(double sx, double sy)
-{
-    // Passo 1: Comece com uma matriz identidade
-    Matriz S = Matriz::criarIdentidade();
-
-    // Passo 2: Altere as células corretas para receber sx e sy
+Matriz Matriz::criarMatrizEscala(double sx, double sy, double sz) {
+    Matriz S; // Começa como identidade
     S.dados[0][0] = sx;
     S.dados[1][1] = sy;
-
-    // Passo 3: Retorne a matriz de escala
+    S.dados[2][2] = sz;
     return S;
 }
 
-Matriz Matriz::criarMatrizRotacao(double anguloEmGraus)
-{
-    // Passo 1: Converter graus para radianos
-    double anguloRad = anguloEmGraus * M_PI / 180.0;
-
-    // Passo 2: Calcular o seno e o cosseno UMA VEZ para ser mais eficiente
-    double cosTheta = cos(anguloRad);
-    double sinTheta = sin(anguloRad);
-
-    // Passo 3: Comece com uma matriz identidade
-    Matriz R = Matriz::criarIdentidade();
-
-    // Passo 4: Altere as quatro células do canto superior esquerdo
-    R.dados[0][0] = cosTheta;
-    R.dados[0][1] = -sinTheta;
-    R.dados[1][0] = sinTheta;
-    R.dados[1][1] = cosTheta;
-
-    // Passo 5: Retorne a matriz de rotação
+Matriz Matriz::criarMatrizRotacaoX(double anguloGraus) {
+    double rad = anguloGraus * M_PI / 180.0;
+    Matriz R;
+    R.dados[1][1] = cos(rad);
+    R.dados[1][2] = -sin(rad);
+    R.dados[2][1] = sin(rad);
+    R.dados[2][2] = cos(rad);
     return R;
 }
 
-Matriz Matriz::MatrizCompostaEscala(double sx, double sy, double dx, double dy)
-{
-    // Passo 1: Chamar função para criar a matriz indentidade
-    Matriz S = Matriz::criarMatrizEscala(sx, sy);
+Matriz Matriz::criarMatrizRotacaoY(double anguloGraus) {
+    double rad = anguloGraus * M_PI / 180.0;
+    Matriz R;
+    R.dados[0][0] = cos(rad);
+    R.dados[0][2] = sin(rad);
+    R.dados[2][0] = -sin(rad);
+    R.dados[2][2] = cos(rad);
+    return R;
+}
 
-    // Passo 2: Criar a matriz translação 1 com os valores positivos
-    Matriz T1 = Matriz::criarMatrizTranslacao(dx, dy);
+Matriz Matriz::criarMatrizRotacaoZ(double anguloGraus) {
+    double rad = anguloGraus * M_PI / 180.0;
+    Matriz R;
+    R.dados[0][0] = cos(rad);
+    R.dados[0][1] = -sin(rad);
+    R.dados[1][0] = sin(rad);
+    R.dados[1][1] = cos(rad);
+    return R;
+}
 
-    // Passo 3: Criar a matriz translação 2 com os valores negativos
-    Matriz T2 = Matriz::criarMatrizTranslacao(-dx, -dy);
-
-    // Passo 4: aplicar a transformação T1*R*T2
-    Matriz resultado = T1 * S * T2;
-
+Matriz Matriz::operator*(const Matriz& outra) const {
+    Matriz resultado;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            resultado.dados[i][j] = 0.0; // Zera o campo
+            for (int k = 0; k < 4; ++k) {
+                resultado.dados[i][j] += this->dados[i][k] * outra.dados[k][j];
+            }
+        }
+    }
     return resultado;
 }
 
-Matriz Matriz::MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy)
-{
-    // Passo 1: Chamar função para criar a matriz indentidade
-    Matriz R = Matriz::criarMatrizRotacao(anguloEmGraus);
+Ponto operator*(const Matriz& M, const Ponto& p) {
+    Ponto resultado;
+    for (int i = 0; i < 4; ++i) {
+        resultado.dados[i][0] = 0.0; // Zera o campo
+        for (int k = 0; k < 4; ++k) {
+            resultado.dados[i][0] += M.dados[i][k] * p.dados[k][0];
+        }
+    }
 
-    // Passo 2: Criar a matriz translação 1 com os valores positivos
-    Matriz T1 = Matriz::criarMatrizTranslacao(dx, dy);
-
-    // Passo 3: Criar a matriz translação 2 com os valores negativos
-    Matriz T2 = Matriz::criarMatrizTranslacao(-dx, -dy);
-
-    // Passo 4: aplicar a transformação T1*R*T2
-    Matriz resultado = T1 * R * T2;
-
+    // Normalização (dividir por w)
+    double w = resultado.dados[3][0];
+    if (w != 0 && w != 1) {
+        resultado.dados[0][0] /= w;
+        resultado.dados[1][0] /= w;
+        resultado.dados[2][0] /= w;
+        resultado.dados[3][0] = 1.0;
+    }
     return resultado;
 }
-

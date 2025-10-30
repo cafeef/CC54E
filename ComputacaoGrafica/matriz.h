@@ -1,47 +1,32 @@
 #ifndef MATRIZ_H
 #define MATRIZ_H
 
+#include <vector>
 #include <QVector>
-#include <cmath> // Para sin() e cos() na rotação
 
-class Matriz
-{
+class Ponto; // Declaração avançada (forward declaration)
+
+class Matriz {
 public:
-    // --- CONSTRUTORES ---
-    // Construtor padrão (cria uma matriz vazia)
+    // Matriz 4x4
+    std::vector<std::vector<double>> dados;
+
+    // Construtor: cria uma matriz identidade 4x4
     Matriz();
-    // Construtor que cria uma matriz com tamanho definido e preenchida com zeros
-    Matriz(int linhas, int colunas);
-    QVector<QVector<double>> getDados() const;
 
-
-
-    // --- OPERAÇÕES ---
-    // Sobrecarrega o operador * para que possamos fazer A * B
-    Matriz operator*(const Matriz &outra) const;
-    void imprimir() const;
-
-
-    // --- MÉTODOS DE FÁBRICA (STATIC) ---
-    // Static significa que podemos chamar estas funções sem precisar de um objeto.
-    // Ex: Matriz identidade = Matriz::criarIdentidade(3);
-
-    // Cria uma matriz identidade 3x3
+    // Funções de fábrica para transformações 3D
     static Matriz criarIdentidade();
-    // Cria uma matriz de translação 3x3
-    static Matriz criarMatrizTranslacao(double dx, double dy);
-    // Cria uma matriz de escala 3x3
-    static Matriz criarMatrizEscala(double sx, double sy);
-    // Cria uma matriz de rotação 3x3
-    static Matriz criarMatrizRotacao(double anguloEmGraus);
-    // Cria uma matriz de escala 3x3
-    static Matriz MatrizCompostaEscala(double sx, double sy, double dx, double dy);
-    // Cria uma matriz de rotação 3x3
-    static Matriz MatrizCompostaRotacao(double anguloEmGraus, double dx, double dy);
+    static Matriz criarMatrizTranslacao(double dx, double dy, double dz);
+    static Matriz criarMatrizEscala(double sx, double sy, double sz);
+    static Matriz criarMatrizRotacaoX(double anguloGraus);
+    static Matriz criarMatrizRotacaoY(double anguloGraus);
+    static Matriz criarMatrizRotacaoZ(double anguloGraus);
 
-protected:
-    // Usamos 'protected' para que as classes filhas (como Ponto) possam aceder
-    QVector<QVector<double>> dados;
+    // Operador de multiplicação
+    Matriz operator*(const Matriz& outra) const;
 };
+
+// Operador para multiplicar Matriz * Ponto
+Ponto operator*(const Matriz& M, const Ponto& p);
 
 #endif // MATRIZ_H

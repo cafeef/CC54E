@@ -1,23 +1,20 @@
 #ifndef PONTO_H
 #define PONTO_H
 
-#include "matriz.h"
+#include "matriz.h" // Inclui a definição da Matriz
 
-class Ponto : public Matriz {
+class Ponto {
 public:
-    //Construtor que recebe x e y
-    Ponto(double x, double y);
-    Ponto(const Matriz &outra);
+    // Vetor coluna 4x1
+    std::vector<std::vector<double>> dados;
 
-    //Métodos que retornam os valores de x e y
+    // Construtor: cria um ponto [x, y, z, 1]
+    Ponto(double x = 0.0, double y = 0.0, double z = 0.0);
+
+    // Getters
     double x() const;
     double y() const;
-
-    //Métodos de Transformações Geométricas
-    void transladar(double dx, double dy);
-    void escalonar(double dx, double dy);
-    void rotacionar(double anguloEmGraus);
-
+    double z() const;
 };
 
 #endif // PONTO_H

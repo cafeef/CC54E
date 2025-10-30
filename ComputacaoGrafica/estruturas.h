@@ -108,7 +108,3 @@ public:
     }
 
 };
-
-// O nosso "Display File" será simplesmente um vetor destes objetos.
-// Podemos declará-lo noutra parte do código assim:
-// QVector<ObjetoVirtual> displayFile;

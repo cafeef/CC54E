@@ -12,17 +12,17 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     matriz.cpp \
+    objetovirtual.cpp \
     ponto.cpp \
-    teladedesenho.cpp \
-    window.cpp
+    teladedesenho.cpp
 
 HEADERS += \
-    estruturas.h \
+    face.h \
     mainwindow.h \
     matriz.h \
+    objetovirtual.h \
     ponto.h \
-    teladedesenho.h \
-    window.h
+    teladedesenho.h
 
 FORMS += \
     mainwindow.ui
@@ -36,3 +36,9 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    Pokeball_Obj.obj \
+    UmbreonHighPoly.obj \
+    UmbreonLowPoly.obj \
+    psyduck.obj

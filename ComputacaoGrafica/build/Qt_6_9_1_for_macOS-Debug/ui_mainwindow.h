@@ -62,7 +62,7 @@ public:
     QHBoxLayout *horizontalLayout_9;
     QLabel *LabelComboBox_6;
     QSpinBox *rotationAngleSpinBox;
-    QWidget *widget;
+    QWidget *layoutWidget1;
     QVBoxLayout *verticalLayout_7;
     QVBoxLayout *verticalLayout_6;
     QLabel *label;
@@ -93,7 +93,7 @@ public:
         centralwidget->setObjectName("centralwidget");
         TelaDesenho = new TelaDeDesenho(centralwidget);
         TelaDesenho->setObjectName("TelaDesenho");
-        TelaDesenho->setGeometry(QRect(0, -20, 1091, 761));
+        TelaDesenho->setGeometry(QRect(-160, -130, 1091, 761));
         layoutWidget = new QWidget(centralwidget);
         layoutWidget->setObjectName("layoutWidget");
         layoutWidget->setGeometry(QRect(1100, 10, 371, 271));
@@ -256,34 +256,34 @@ public:
 
         verticalLayout_4->addLayout(horizontalLayout_10);
 
-        widget = new QWidget(centralwidget);
-        widget->setObjectName("widget");
-        widget->setGeometry(QRect(1210, 290, 260, 152));
-        verticalLayout_7 = new QVBoxLayout(widget);
+        layoutWidget1 = new QWidget(centralwidget);
+        layoutWidget1->setObjectName("layoutWidget1");
+        layoutWidget1->setGeometry(QRect(1210, 290, 260, 194));
+        verticalLayout_7 = new QVBoxLayout(layoutWidget1);
         verticalLayout_7->setObjectName("verticalLayout_7");
         verticalLayout_7->setContentsMargins(0, 0, 0, 0);
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setObjectName("verticalLayout_6");
-        label = new QLabel(widget);
+        label = new QLabel(layoutWidget1);
         label->setObjectName("label");
 
         verticalLayout_6->addWidget(label);
 
         horizontalLayout_11 = new QHBoxLayout();
         horizontalLayout_11->setObjectName("horizontalLayout_11");
-        panLeftButton = new QPushButton(widget);
+        panLeftButton = new QPushButton(layoutWidget1);
         panLeftButton->setObjectName("panLeftButton");
 
         horizontalLayout_11->addWidget(panLeftButton);
 
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setObjectName("verticalLayout_5");
-        panUpButton = new QPushButton(widget);
+        panUpButton = new QPushButton(layoutWidget1);
         panUpButton->setObjectName("panUpButton");
 
         verticalLayout_5->addWidget(panUpButton);
 
-        panDownButton = new QPushButton(widget);
+        panDownButton = new QPushButton(layoutWidget1);
         panDownButton->setObjectName("panDownButton");
 
         verticalLayout_5->addWidget(panDownButton);
@@ -291,7 +291,7 @@ public:
 
         horizontalLayout_11->addLayout(verticalLayout_5);
 
-        panRightButton = new QPushButton(widget);
+        panRightButton = new QPushButton(layoutWidget1);
         panRightButton->setObjectName("panRightButton");
 
         horizontalLayout_11->addWidget(panRightButton);
@@ -304,19 +304,19 @@ public:
 
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setObjectName("horizontalLayout_13");
-        label_2 = new QLabel(widget);
+        label_2 = new QLabel(layoutWidget1);
         label_2->setObjectName("label_2");
 
         horizontalLayout_13->addWidget(label_2);
 
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setObjectName("horizontalLayout_12");
-        zoomInButton = new QPushButton(widget);
+        zoomInButton = new QPushButton(layoutWidget1);
         zoomInButton->setObjectName("zoomInButton");
 
         horizontalLayout_12->addWidget(zoomInButton);
 
-        zoomOutButton = new QPushButton(widget);
+        zoomOutButton = new QPushButton(layoutWidget1);
         zoomOutButton->setObjectName("zoomOutButton");
 
         horizontalLayout_12->addWidget(zoomOutButton);
@@ -329,19 +329,19 @@ public:
 
         horizontalLayout_15 = new QHBoxLayout();
         horizontalLayout_15->setObjectName("horizontalLayout_15");
-        label_3 = new QLabel(widget);
+        label_3 = new QLabel(layoutWidget1);
         label_3->setObjectName("label_3");
 
         horizontalLayout_15->addWidget(label_3);
 
         horizontalLayout_14 = new QHBoxLayout();
         horizontalLayout_14->setObjectName("horizontalLayout_14");
-        rotateRightButton = new QPushButton(widget);
+        rotateRightButton = new QPushButton(layoutWidget1);
         rotateRightButton->setObjectName("rotateRightButton");
 
         horizontalLayout_14->addWidget(rotateRightButton);
 
-        rotateLeftButton = new QPushButton(widget);
+        rotateLeftButton = new QPushButton(layoutWidget1);
         rotateLeftButton->setObjectName("rotateLeftButton");
 
         horizontalLayout_14->addWidget(rotateLeftButton);

@@ -55,17 +55,17 @@ OBJECTS_DIR   = ./
 SOURCES       = ../../main.cpp \
 		../../mainwindow.cpp \
 		../../matriz.cpp \
+		../../objetovirtual.cpp \
 		../../ponto.cpp \
-		../../teladedesenho.cpp \
-		../../window.cpp qrc_qmake_qmake_qm_files.cpp \
+		../../teladedesenho.cpp qrc_qmake_qmake_qm_files.cpp \
 		moc_mainwindow.cpp \
 		moc_teladedesenho.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		matriz.o \
+		objetovirtual.o \
 		ponto.o \
 		teladedesenho.o \
-		window.o \
 		qrc_qmake_qmake_qm_files.o \
 		moc_mainwindow.o \
 		moc_teladedesenho.o
@@ -272,17 +272,17 @@ DIST          = /Users/fernanda/Qt/6.9.1/macos/mkspecs/features/spec_pre.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/exceptions.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/yacc.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/lex.prf \
-		../../../../ComputacaoGrafica.pro ../../estruturas.h \
+		../../../../ComputacaoGrafica.pro ../../face.h \
 		../../mainwindow.h \
 		../../matriz.h \
+		../../objetovirtual.h \
 		../../ponto.h \
-		../../teladedesenho.h \
-		../../window.h ../../main.cpp \
+		../../teladedesenho.h ../../main.cpp \
 		../../mainwindow.cpp \
 		../../matriz.cpp \
+		../../objetovirtual.cpp \
 		../../ponto.cpp \
-		../../teladedesenho.cpp \
-		../../window.cpp
+		../../teladedesenho.cpp
 QMAKE_TARGET  = ComputacaoGrafica
 DESTDIR       = 
 TARGET        = ComputacaoGrafica.app/Contents/MacOS/ComputacaoGrafica
@@ -750,8 +750,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../ComputacaoGrafica_pt_BR.ts $(DISTDIR)/
 	$(COPY_FILE) --parents qmake_qmake_qm_files.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../../estruturas.h ../../mainwindow.h ../../matriz.h ../../ponto.h ../../teladedesenho.h ../../window.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../main.cpp ../../mainwindow.cpp ../../matriz.cpp ../../ponto.cpp ../../teladedesenho.cpp ../../window.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../face.h ../../mainwindow.h ../../matriz.h ../../objetovirtual.h ../../ponto.h ../../teladedesenho.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../main.cpp ../../mainwindow.cpp ../../matriz.cpp ../../objetovirtual.cpp ../../ponto.cpp ../../teladedesenho.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.ui $(DISTDIR)/
 	$(COPY_FILE) --parents ../../ComputacaoGrafica_pt_BR.ts $(DISTDIR)/
 
@@ -800,40 +800,32 @@ compiler_moc_header_clean:
 moc_mainwindow.cpp: ../../mainwindow.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
-		../../ponto.h \
-		../../matriz.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../window.h \
+		../../ponto.h \
+		../../matriz.h \
+		../../face.h \
 		/Users/fernanda/Qt/6.9.1/macos/libexec/moc
 	/Users/fernanda/Qt/6.9.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/fernanda/Qt/6.9.1/macos/mkspecs/macx-clang -I'/Users/fernanda/Documents/UTFPR/4 PERIODO/CC54E/ComputacaoGrafica' -I/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers -I/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers -I/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/fernanda/Qt/6.9.1/macos/lib ../../mainwindow.h -o moc_mainwindow.cpp
 
 moc_teladedesenho.cpp: ../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QWidget \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qwidget.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
 		../../ponto.h \
 		../../matriz.h \
-		../../window.h \
+		../../face.h \
 		/Users/fernanda/Qt/6.9.1/macos/libexec/moc
 	/Users/fernanda/Qt/6.9.1/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/fernanda/Qt/6.9.1/macos/mkspecs/macx-clang -I'/Users/fernanda/Documents/UTFPR/4 PERIODO/CC54E/ComputacaoGrafica' -I/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers -I/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers -I/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/fernanda/Qt/6.9.1/macos/lib ../../teladedesenho.h -o moc_teladedesenho.cpp
 
@@ -849,20 +841,16 @@ ui_mainwindow.h: ../../mainwindow.ui \
 		../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QWidget \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qwidget.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
 		../../ponto.h \
 		../../matriz.h \
-		../../window.h
+		../../face.h
 	/Users/fernanda/Qt/6.9.1/macos/libexec/uic ../../mainwindow.ui -o ui_mainwindow.h
 
 compiler_rez_source_make_all:
@@ -880,20 +868,16 @@ compiler_clean: compiler_lrelease_clean compiler_rcc_clean compiler_moc_header_c
 main.o: ../../main.cpp ../../mainwindow.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
-		../../ponto.h \
-		../../matriz.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../window.h \
+		../../ponto.h \
+		../../matriz.h \
+		../../face.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QApplication \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qapplication.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QLocale \
@@ -905,32 +889,47 @@ main.o: ../../main.cpp ../../mainwindow.h \
 mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
-		../../ponto.h \
-		../../matriz.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../window.h \
+		../../ponto.h \
+		../../matriz.h \
+		../../face.h \
 		ui_mainwindow.h \
 		../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QWidget \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qwidget.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QFile \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qfile.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QTextStream \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qtextstream.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QTimer \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qtimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../mainwindow.cpp
 
 matriz.o: ../../matriz.cpp ../../matriz.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
+		../../ponto.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o matriz.o ../../matriz.cpp
+
+objetovirtual.o: ../../objetovirtual.cpp ../../objetovirtual.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
+		../../ponto.h \
+		../../matriz.h \
+		../../face.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o objetovirtual.o ../../objetovirtual.cpp
 
 ponto.o: ../../ponto.cpp ../../ponto.h \
 		../../matriz.h \
@@ -941,30 +940,21 @@ ponto.o: ../../ponto.cpp ../../ponto.h \
 teladedesenho.o: ../../teladedesenho.cpp ../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/QWidget \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Headers/qwidget.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
-		../../estruturas.h \
+		../../objetovirtual.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QString \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qstring.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QPointF \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qpoint.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QColor \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qcolor.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QDebug \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qdebug.h \
-		../../ponto.h \
-		../../matriz.h \
-		../../window.h \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPainter \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpainter.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o teladedesenho.o ../../teladedesenho.cpp
-
-window.o: ../../window.cpp ../../window.h \
-		../../ponto.h \
-		../../matriz.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/QVector \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o window.o ../../window.cpp
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtCore.framework/Headers/qvector.h \
+		../../ponto.h \
+		../../matriz.h \
+		../../face.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPainter \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpainter.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPen \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpen.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o teladedesenho.o ../../teladedesenho.cpp
 
 qrc_qmake_qmake_qm_files.o: qrc_qmake_qmake_qm_files.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qmake_qmake_qm_files.o qrc_qmake_qmake_qm_files.cpp

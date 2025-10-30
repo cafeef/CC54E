@@ -17,8 +17,8 @@
    <widget class="TelaDeDesenho" name="TelaDesenho" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>-20</y>
+      <x>-160</x>
+      <y>-130</y>
       <width>1091</width>
       <height>761</height>
      </rect>
@@ -206,13 +206,13 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>1210</x>
       <y>290</y>
       <width>260</width>
-      <height>152</height>
+      <height>194</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_7">

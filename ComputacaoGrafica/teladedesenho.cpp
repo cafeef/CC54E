@@ -1,205 +1,123 @@
 #include "teladedesenho.h"
-#include <QPainter> // A classe QPainter é a "caneta" que usamos para desenhar
+#include <QPainter>
+#include <QPen>
 #include <cmath>
-#include <algorithm>
 
-TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent)
-{
-    // Define um fundo preto para a nossa área de desenho
-    setAutoFillBackground(true);
-    QPalette pal = palette();
-    pal.setColor(QPalette::Window, Qt::black);
-    setPalette(pal);
+TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent), cameraPos(0, 0, 500), zoom(1.0), rotX(0), rotY(0) {
+    // Começamos com a câmera a olhar para a origem, afastada 500 unidades em Z.
 }
 
-void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *df_ptr) {
-    this->displayFile_ptr = df_ptr; // Guarda o ponteiro
+void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *ptr_df) {
+    this->displayFile_ptr = ptr_df;
 }
 
-// Função que calcula o código de região de 4 bits para um ponto no SCN
-int TelaDeDesenho::calcularOutcode(const Ponto &p) const {
-    int code = DENTRO;
-    if (p.x() < -1.0) code |= ESQUERDA;
-    else if (p.x() > 1.0) code |= DIREITA;
-    if (p.y() < -1.0) code |= ABAIXO;
-    else if (p.y() > 1.0) code |= ACIMA;
-    return code;
+// --- Slots de Navegação 3D ---
+void TelaDeDesenho::rotacionarCamera(double dx, double dy, double dz) {
+    // Usaremos dx e dy para rotação (como arrastar o mouse)
+    rotY += dx;
+    rotX += dy;
+    update();
 }
 
-// Implementação do algoritmo de recorte de Cohen-Sutherland
-bool TelaDeDesenho::clipCohenSutherland(Ponto &p1, Ponto &p2) const {
-    int outcode1 = calcularOutcode(p1);
-    int outcode2 = calcularOutcode(p2);
-
-    while (true) {
-        if (!(outcode1 | outcode2)) { // Aceitação trivial: ambos dentro
-            return true;
-        } else if (outcode1 & outcode2) { // Rejeição trivial: ambos na mesma região "fora"
-            return false;
-        } else { // Candidata a recorte
-            double x, y;
-            int outcodeFora = outcode2 > outcode1 ? outcode2 : outcode1;
-
-            // Encontra o ponto de interseção com a borda do SCN
-            if (outcodeFora & ACIMA) {
-                x = p1.x() + (p2.x() - p1.x()) * (1.0 - p1.y()) / (p2.y() - p1.y());
-                y = 1.0;
-            } else if (outcodeFora & ABAIXO) {
-                x = p1.x() + (p2.x() - p1.x()) * (-1.0 - p1.y()) / (p2.y() - p1.y());
-                y = -1.0;
-            } else if (outcodeFora & DIREITA) {
-                y = p1.y() + (p2.y() - p1.y()) * (1.0 - p1.x()) / (p2.x() - p1.x());
-                x = 1.0;
-            } else { // ESQUERDA
-                y = p1.y() + (p2.y() - p1.y()) * (-1.0 - p1.x()) / (p2.x() - p1.x());
-                x = -1.0;
-            }
-
-            // Atualiza o ponto que estava fora com a nova interseção
-            if (outcodeFora == outcode1) {
-                p1 = Ponto(x, y);
-                outcode1 = calcularOutcode(p1);
-            } else {
-                p2 = Ponto(x, y);
-                outcode2 = calcularOutcode(p2);
-            }
-        }
-    }
+void TelaDeDesenho::moverCamera(double dx, double dy, double dz) {
+    // Isso será o "Pan"
+    cameraPos.dados[0][0] += dx;
+    cameraPos.dados[1][0] += dy;
+    cameraPos.dados[2][0] += dz;
+    update();
 }
 
-void TelaDeDesenho::calcularMatrizDeVisualizacao(Matriz& m_norm, Matriz& m_vp) const
-{
-    // --- Etapa 1: Encontrar e Extrair Dados do Objeto Window ---
-    ObjetoVirtual windowObj;
-    bool encontrouWindow = false;
-    for (const auto &obj : *displayFile_ptr) {
-        if (obj.nome == "#WINDOW_CAMERA") {
-            windowObj = obj;
-            encontrouWindow = true;
-            break;
-        }
-    }
-
-    if (!encontrouWindow) { // Se não achar, retorna matrizes identidade
-        m_norm = Matriz::criarIdentidade();
-        m_vp = Matriz::criarIdentidade();
-        return;
-    }
-
-    Ponto centroWindow = windowObj.calcularCentro();
-    Ponto p0 = windowObj.pontos[0], p1 = windowObj.pontos[1], p3 = windowObj.pontos[3];
-    double dx_largura = p1.x() - p0.x(), dy_largura = p1.y() - p0.y();
-    double larguraWindow = std::sqrt(dx_largura * dx_largura + dy_largura * dy_largura);
-    double dx_altura = p3.x() - p0.x(), dy_altura = p3.y() - p0.y();
-    double alturaWindow = std::sqrt(dx_altura * dx_altura + dy_altura * dy_altura);
-    double anguloRadianos = std::atan2(dy_largura, dx_largura);
-    double anguloWindow = anguloRadianos * 180.0 / M_PI;
-
-    if (larguraWindow < 1e-6 || alturaWindow < 1e-6) { // Proteção
-        m_norm = Matriz::criarIdentidade();
-        m_vp = Matriz::criarIdentidade();
-        return;
-    }
-
-    // --- Etapa 2: Corrigir a Proporção (Aspect Ratio) ---
-    // Pega as dimensões da sua viewport final
-    double margem = 20.0; // Usando o valor que você definiu no paintEvent
-    double vp_largura = this->width() - 2 * margem;
-    double vp_altura = this->height() - 3 * margem; // Usando sua margem assimétrica
-    if (vp_largura < 1 || vp_altura < 1) { /* retorna matrizes identidade */ }
-
-    double ar_viewport = vp_largura / vp_altura;
-    double ar_window = larguraWindow / alturaWindow;
-
-    double larguraWindowCorrigida = larguraWindow;
-    double alturaWindowCorrigida = alturaWindow;
-
-    // Compara as proporções. O objetivo é criar uma "área de visão" no mundo
-    // que tenha a mesma proporção da viewport, para evitar distorção.
-    if (ar_window > ar_viewport) {
-        // A Window é mais "larga" que a Viewport. A altura da Window será aumentada
-        // para corresponder à proporção, mostrando mais coisas acima e abaixo (letterboxing).
-        alturaWindowCorrigida = larguraWindow / ar_viewport;
-    } else {
-        // A Window é mais "alta" que a Viewport. A largura da Window será aumentada
-        // para corresponder, mostrando mais coisas nos lados (pillarboxing).
-        larguraWindowCorrigida = alturaWindow * ar_viewport;
-    }
-
-    // --- Etapa 3: Construir a Matriz de Normalização (Mundo -> SCN) ---
-    // Agora usamos as dimensões CORRIGIDAS para garantir que não haja distorção.
-    Matriz T = Matriz::criarMatrizTranslacao(-centroWindow.x(), -centroWindow.y());
-    Matriz R = Matriz::criarMatrizRotacao(-anguloWindow);
-    Matriz S_norm = Matriz::criarMatrizEscala(2.0 / larguraWindowCorrigida, 2.0 / alturaWindowCorrigida);
-    m_norm = S_norm * R * T;
-
-    // --- Etapa 4: Construir a Matriz de Viewport (SCN -> Tela) ---
-    // Esta matriz agora simplesmente mapeia o SCN para a viewport retangular.
-    double vp_x_min = margem;
-    double vp_y_min = margem * 2;
-    Matriz S_vp = Matriz::criarMatrizEscala(vp_largura / 2.0, -vp_altura / 2.0);
-    Matriz T_vp = Matriz::criarMatrizTranslacao(vp_x_min + vp_largura / 2.0, vp_y_min + vp_altura / 2.0);
-    m_vp = T_vp * S_vp;
+void TelaDeDesenho::aplicarZoom(double fator) {
+    zoom *= fator;
+    update();
 }
 
-void TelaDeDesenho::paintEvent(QPaintEvent *event)
-{
+// --- A Nova Pipeline de Renderização 3D ---
+Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const {
+    // 1. Matriz de Viewport (SCN -> Tela)
+    double vp_x_min = MARGEM_VIEWPORT;
+    double vp_y_min = MARGEM_VIEWPORT;
+    double vp_largura = this->width() - 2 * MARGEM_VIEWPORT;
+    double vp_altura = this->height() - 2 * MARGEM_VIEWPORT;
+
+    Matriz S_vp = Matriz::criarMatrizEscala(vp_largura / 2.0, -vp_altura / 2.0, 1.0); // Inverte Y
+    Matriz T_vp = Matriz::criarMatrizTranslacao(vp_x_min + vp_largura / 2.0, vp_y_min + vp_altura / 2.0, 0);
+    Matriz M_viewport = T_vp * S_vp;
+
+    // 2. Matriz de Projeção Ortogonal
+    // Define o "cubo" de visualização no espaço da câmera.
+    double proj_largura = (vp_largura / zoom);
+    double proj_altura = (vp_altura / zoom);
+    double r = proj_largura / 2.0;
+    double l = -r;
+    double t = proj_altura / 2.0;
+    double b = -t;
+    double n = 1.0;    // Near plane
+    double f = 1000.0; // Far plane (distância de visualização)
+
+    Matriz M_proj;
+    M_proj.dados[0][0] = 2.0 / (r - l);
+    M_proj.dados[1][1] = 2.0 / (t - b);
+    M_proj.dados[2][2] = -2.0 / (f - n);
+    M_proj.dados[3][3] = 1.0;
+    M_proj.dados[0][3] = -(r + l) / (r - l);
+    M_proj.dados[1][3] = -(t + b) / (t - b);
+    M_proj.dados[2][3] = -(f + n) / (f - n);
+
+    // 3. Matriz de Câmera (Mundo -> Câmera)
+    Matriz R_cam = Matriz::criarMatrizRotacaoY(-rotY) * Matriz::criarMatrizRotacaoX(-rotX);
+    Matriz T_cam = Matriz::criarMatrizTranslacao(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
+    Matriz M_camera = R_cam * T_cam;
+
+    // 4. Matriz Final
+    // Transforma do Mundo -> Câmera -> Projeção -> Viewport
+    return M_viewport * M_proj * M_camera;
+}
+
+void TelaDeDesenho::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    // 1. Prepara a tela
-    painter.fillRect(this->rect(), Qt::black);
+    painter.fillRect(this->rect(), Qt::black); // Fundo preto
 
     if (!displayFile_ptr || displayFile_ptr->isEmpty()) return;
 
-    // 2. Obtém as matrizes de transformação separadas
-    Matriz M_norm, M_vp;
-    calcularMatrizDeVisualizacao(M_norm, M_vp);
+    // 1. Obter a matriz de transformação final
+    Matriz M_final = calcularMatrizDeVisualizacao();
 
-    // 3. Desenha os objetos, aplicando a pipeline de recorte
-    QPen canetaPadrao;
-    canetaPadrao.setWidth(2);
-
+    // 2. Desenhar todos os objetos
     for (const ObjetoVirtual &objeto : *displayFile_ptr) {
-        if (objeto.nome == "#WINDOW_CAMERA") continue;
+        painter.setPen(QPen(objeto.cor, 1)); // Define a cor do wireframe
 
-        canetaPadrao.setColor(objeto.cor);
-        painter.setPen(canetaPadrao);
-        painter.setBrush(Qt::NoBrush);
+        // 3. Iterar sobre as FACES do objeto
+        for (const Face &face : objeto.faces) {
 
-        if (objeto.tipo == TipoObjeto::Ponto) {
-            if (objeto.pontos.isEmpty()) continue;
-            Ponto p_scn = Ponto(M_norm * objeto.pontos.first());
-            // Recorte de Ponto: só desenha se estiver dentro do SCN
-            if (p_scn.x() >= -1 && p_scn.x() <= 1 && p_scn.y() >= -1 && p_scn.y() <= 1) {
-                Ponto p_vp = Ponto(M_vp * p_scn);
-                painter.drawPoint(QPointF(p_vp.x(), p_vp.y()));
-            }
-        } else { // Retas e Polígonos são tratados como segmentos de reta
-            for (int i = 0; i < objeto.pontos.size(); ++i) {
-                Ponto p1_mundo = objeto.pontos[i];
-                Ponto p2_mundo = (objeto.tipo == TipoObjeto::Reta)
-                                     ? objeto.pontos[i+1]
-                                     : objeto.pontos[(i + 1) % objeto.pontos.size()];
+            // 4. Desenhar cada ARESTA da face
+            for (int i = 0; i < face.indicesVertices.size(); ++i) {
+                int indice1 = face.indicesVertices[i];
+                int indice2 = face.indicesVertices[(i + 1) % face.indicesVertices.size()]; // Próximo, com wrap-around
 
-                Ponto p1_scn = Ponto(M_norm * p1_mundo);
-                Ponto p2_scn = Ponto(M_norm * p2_mundo);
-
-                // Aplica o recorte na reta em SCN
-                if (clipCohenSutherland(p1_scn, p2_scn)) {
-                    // Se a reta sobreviveu, transforma para a viewport e desenha
-                    Ponto p1_vp = Ponto(M_vp * p1_scn);
-                    Ponto p2_vp = Ponto(M_vp * p2_scn);
-                    painter.drawLine(QPointF(p1_vp.x(), p1_vp.y()), QPointF(p2_vp.x(), p2_vp.y()));
+                // 5. Garantir que os índices são válidos
+                if (indice1 >= objeto.vertices.size() || indice2 >= objeto.vertices.size()) {
+                    continue; // Pula esta aresta se os dados estiverem corrompidos
                 }
-                if (objeto.tipo == TipoObjeto::Reta) break;
+
+                // 6. Pegar os vértices 3D do mundo
+                Ponto v1_mundo = objeto.vertices[indice1];
+                Ponto v2_mundo = objeto.vertices[indice2];
+
+                // 7. Transformar para a tela
+                Ponto p1_tela = M_final * v1_mundo;
+                Ponto p2_tela = M_final * v2_mundo;
+
+                // 8. Desenhar a linha 2D
+                painter.drawLine(QPointF(p1_tela.x(), p1_tela.y()), QPointF(p2_tela.x(), p2_tela.y()));
             }
         }
     }
 
-    // 4. Desenha a borda da viewport por último, usando sua lógica de margem
-    double margem = 20.0;
-    QRectF viewportRect(margem, margem * 2 , this->width() - 2 * margem, this->height() - 3 * margem);
+    // 9. Desenhar a borda da viewport (como antes)
     painter.setPen(QPen(Qt::gray, 1));
+    painter.setBrush(Qt::NoBrush);
+    QRectF viewportRect(MARGEM_VIEWPORT, MARGEM_VIEWPORT, this->width() - 2 * MARGEM_VIEWPORT, this->height() - 2 * MARGEM_VIEWPORT);
     painter.drawRect(viewportRect);
 }

@@ -38,10 +38,30 @@ template <> constexpr inline auto TelaDeDesenho::qt_create_metaobjectdata<qt_met
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "TelaDeDesenho"
+        "TelaDeDesenho",
+        "rotacionarCamera",
+        "",
+        "dx",
+        "dy",
+        "dz",
+        "moverCamera",
+        "aplicarZoom",
+        "fator"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Slot 'rotacionarCamera'
+        QtMocHelpers::SlotData<void(double, double, double)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Double, 3 }, { QMetaType::Double, 4 }, { QMetaType::Double, 5 },
+        }}),
+        // Slot 'moverCamera'
+        QtMocHelpers::SlotData<void(double, double, double)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Double, 3 }, { QMetaType::Double, 4 }, { QMetaType::Double, 5 },
+        }}),
+        // Slot 'aplicarZoom'
+        QtMocHelpers::SlotData<void(double)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Double, 8 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,10 +83,14 @@ Q_CONSTINIT const QMetaObject TelaDeDesenho::staticMetaObject = { {
 void TelaDeDesenho::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<TelaDeDesenho *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
-    (void)_a;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->rotacionarCamera((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3]))); break;
+        case 1: _t->moverCamera((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3]))); break;
+        case 2: _t->aplicarZoom((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        default: ;
+        }
+    }
 }
 
 const QMetaObject *TelaDeDesenho::metaObject() const
@@ -85,6 +109,18 @@ void *TelaDeDesenho::qt_metacast(const char *_clname)
 int TelaDeDesenho::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 3)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 3;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 3)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 3;
+    }
     return _id;
 }
 QT_WARNING_POP

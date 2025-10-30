@@ -2,39 +2,38 @@
 #define TELADEDESENHO_H
 
 #include <QWidget>
-#include <QVector>
-#include "estruturas.h" // Incluímos as nossas estruturas de dados!
+#include "objetovirtual.h"
+#include "matriz.h"
 
-class TelaDeDesenho : public QWidget
-{
-    Q_OBJECT // Macro obrigatória para classes Qt
+class TelaDeDesenho : public QWidget {
+    Q_OBJECT
 
 public:
     explicit TelaDeDesenho(QWidget *parent = nullptr);
+    void setDisplayFile(QVector<ObjetoVirtual> *ptr_df);
 
-    // Método público para a MainWindow poder enviar a lista de objetos para a tela
-    void setDisplayFile(QVector<ObjetoVirtual> *df_ptr);
+public slots:
+    // Slots para a navegação 3D (controlados pela MainWindow)
+    void rotacionarCamera(double dx, double dy, double dz);
+    void moverCamera(double dx, double dy, double dz);
+    void aplicarZoom(double fator);
 
 protected:
-    // Este é o evento de pintura. O Qt chama-o quando o widget precisa ser redesenhado.
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QVector<ObjetoVirtual> *displayFile_ptr = nullptr; // Ponteiro para o display file
-    void calcularMatrizDeVisualizacao(Matriz& m_norm, Matriz& m_vp) const;
+    QVector<ObjetoVirtual> *displayFile_ptr = nullptr;
 
-    // --- CONSTANTES PARA O ALGORITMO DE RECORTE ---
-    const int DENTRO = 0;   // 0000
-    const int ESQUERDA = 1; // 0001
-    const int DIREITA = 2;  // 0010
-    const int ABAIXO = 4;   // 0100
-    const int ACIMA = 8;    // 1000
-    // -------------------------------------------
+    // Constante da margem (como antes)
+    const double MARGEM_VIEWPORT = 20.0;
 
-    // --- FUNÇÕES DE AJUDA PARA O RECORTE ---
-    int calcularOutcode(const Ponto &p) const;
-    bool clipCohenSutherland(Ponto &p1, Ponto &p2) const;
+    // --- Câmera 3D Simples ---
+    Ponto cameraPos;    // Posição da câmera no mundo
+    double zoom;        // Fator de zoom da projeção ortogonal
+    double rotX, rotY;  // Rotação da câmera
 
+    // Função de ajuda para a pipeline 3D
+    Matriz calcularMatrizDeVisualizacao() const;
 };
 
 #endif // TELADEDESENHO_H
