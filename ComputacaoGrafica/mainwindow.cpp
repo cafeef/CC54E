@@ -137,6 +137,8 @@ void MainWindow::on_rotateRightButton_clicked() {
 // --- SLOTS DE TRANSFORMAÇÃO DE OBJETO (3D) ---
 // Estes botões transformam o objeto selecionado
 
+// Em mainwindow.cpp
+
 void MainWindow::on_translateButton_clicked() {
     int indice = ui->objectSelectorComboBox->currentIndex();
     if (indice < 0) return;
@@ -144,11 +146,8 @@ void MainWindow::on_translateButton_clicked() {
     double dx = ui->translateXSpinBox->value();
     double dy = ui->translateYSpinBox->value();
 
-    // --- CORREÇÃO TEMPORÁRIA ---
-    // Você precisará adicionar um "translateZSpinBox" na sua UI
-    double dz = 0.0; // Valor padrão por enquanto
-    // double dz = ui->translateZSpinBox->value(); // A linha original
-    // ---------------------------
+    // Lê o valor do novo SpinBox para Z
+    double dz = ui->translateZSpinBox->value();
 
     displayFile[indice].transladar(dx, dy, dz);
     ui->TelaDesenho->update();
@@ -158,9 +157,18 @@ void MainWindow::on_rotationEixoButton_clicked() {
     int indice = ui->objectSelectorComboBox->currentIndex();
     if (indice < 0) return;
 
+    // Lê o ângulo do novo SpinBox
     double angulo = ui->rotationAngleSpinBox->value();
-    // Você precisará adicionar botões ou um seletor para os eixos X, Y, Z
-    displayFile[indice].rotacionarEixoY(angulo); // Exemplo: rodar em Y
+
+    // Verifica qual eixo está selecionado
+    if (ui->rotateXButton->isChecked()) {
+        displayFile[indice].rotacionarEixoX(angulo);
+    } else if (ui->rotateYButton->isChecked()) {
+        displayFile[indice].rotacionarEixoY(angulo);
+    } else if (ui->rotateZButton->isChecked()) {
+        displayFile[indice].rotacionarEixoZ(angulo);
+    }
+
     ui->TelaDesenho->update();
 }
 
@@ -171,13 +179,10 @@ void MainWindow::on_escaleEixoButton_clicked() {
     double sx = ui->escaleXSpinBox->value();
     double sy = ui->escaleYSpinBox->value();
 
-    // --- CORREÇÃO TEMPORÁRIA ---
-    // Você precisará adicionar um "escaleZSpinBox" na sua UI
-    double sz = 1.0; // Valor padrão (escala 1.0 não muda nada)
-    // double sz = ui->escaleZSpinBox->value(); // A linha original
-    // ---------------------------
+    // Lê o valor do novo SpinBox para Z
+    double sz = ui->escaleZSpinBox->value();
 
-    // Para escala, valores 0 podem causar problemas. Usamos 1.0 se for 0.
+    // Proteção contra escala 0
     if (sx == 0) sx = 1.0;
     if (sy == 0) sy = 1.0;
     if (sz == 0) sz = 1.0;
