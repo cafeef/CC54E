@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
     //ObjetoVirtual psyduck = carregarObjetoOBJ(caminhoPsyduck, "Psyduck", Qt::blue);
-    ObjetoVirtual umbreonhigh = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon High", Qt::white);
-    ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonHighPoly, "Umbreon Low", Qt::yellow);
+    ObjetoVirtual umbreonhigh = carregarObjetoOBJ(caminhoUmbreonHighPoly, "Umbreon High", Qt::white);
+    ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon Low", Qt::yellow);
 
     // --- Posicionar os Pokémons na cena 3D ---
     // (Ajuste estes valores depois de executar pela primeira vez)
