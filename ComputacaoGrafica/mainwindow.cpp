@@ -14,16 +14,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     // --- CARREGAR OS POKÉMONS ---
     // !!! MUDE ESTES CAMINHOS PARA ONDE VOCÊ GUARDOU OS SEUS FICHEIROS .obj !!!
-    QString caminhoPokebola = "Pokemons/Pokeball_Obj.obj";
+    //QString caminhoPokebola = ":/Pokemons/Pokeball_Obj.obj";
+    //QString caminhoPsyduck = ":/Pokemons/psyduck.obj";
+    QString caminhoUmbreonHighPoly = ":/Pokemons/UmbreonHighPoly.obj";
+    QString caminhoUmbreonLowPoly = ":/Pokemons/UmbreonLowPoly.obj";
 
-    ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
+    //ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
+    //ObjetoVirtual psyduck = carregarObjetoOBJ(caminhoPsyduck, "Psyduck", Qt::blue);
+    ObjetoVirtual umbreonhigh = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon High", Qt::white);
+    ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonHighPoly, "Umbreon Low", Qt::yellow);
 
     // --- Posicionar os Pokémons na cena 3D ---
     // (Ajuste estes valores depois de executar pela primeira vez)
-    pokebola.escalonarEixo(0.05, 0.05, 0.05); // (Este pode ser grande)
-    pokebola.transladar(100, 0, 0);         // Move para a direita
+    //pokebola.escalonarEixo(0.05, 0.05, 0.05); // (Este pode ser grande)
 
-    displayFile.append(pokebola);
+
+    //displayFile.append(pokebola);
+    //displayFile.append(psyduck);
+    displayFile.append(umbreonhigh);
+    displayFile.append(umbreonlow);
     // ------------------------------------
 
     // Conecta o display file à tela

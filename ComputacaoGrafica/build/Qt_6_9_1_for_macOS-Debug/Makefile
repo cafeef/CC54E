@@ -57,7 +57,8 @@ SOURCES       = ../../main.cpp \
 		../../matriz.cpp \
 		../../objetovirtual.cpp \
 		../../ponto.cpp \
-		../../teladedesenho.cpp qrc_qmake_qmake_qm_files.cpp \
+		../../teladedesenho.cpp qrc_recursos.cpp \
+		qrc_qmake_qmake_qm_files.cpp \
 		moc_mainwindow.cpp \
 		moc_teladedesenho.cpp
 OBJECTS       = main.o \
@@ -66,6 +67,7 @@ OBJECTS       = main.o \
 		objetovirtual.o \
 		ponto.o \
 		teladedesenho.o \
+		qrc_recursos.o \
 		qrc_qmake_qmake_qm_files.o \
 		moc_mainwindow.o \
 		moc_teladedesenho.o
@@ -515,6 +517,7 @@ Makefile: ../../ComputacaoGrafica.pro /Users/fernanda/Qt/6.9.1/macos/mkspecs/mac
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/yacc.prf \
 		/Users/fernanda/Qt/6.9.1/macos/mkspecs/features/lex.prf \
 		../../ComputacaoGrafica.pro \
+		../../recursos.qrc \
 		qmake_qmake_qm_files.qrc \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Resources/QtWidgets.prl \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Resources/QtGui.prl \
@@ -724,6 +727,7 @@ Makefile: ../../ComputacaoGrafica.pro /Users/fernanda/Qt/6.9.1/macos/mkspecs/mac
 /Users/fernanda/Qt/6.9.1/macos/mkspecs/features/yacc.prf:
 /Users/fernanda/Qt/6.9.1/macos/mkspecs/features/lex.prf:
 ../../ComputacaoGrafica.pro:
+../../recursos.qrc:
 qmake_qmake_qm_files.qrc:
 /Users/fernanda/Qt/6.9.1/macos/lib/QtWidgets.framework/Resources/QtWidgets.prl:
 /Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Resources/QtGui.prl:
@@ -753,7 +757,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../ComputacaoGrafica_pt_BR.ts $(DISTDIR)/
-	$(COPY_FILE) --parents qmake_qmake_qm_files.qrc $(DISTDIR)/
+	$(COPY_FILE) --parents ../../recursos.qrc qmake_qmake_qm_files.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents ../../face.h ../../mainwindow.h ../../matriz.h ../../objetovirtual.h ../../ponto.h ../../teladedesenho.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../../main.cpp ../../mainwindow.cpp ../../matriz.cpp ../../objetovirtual.cpp ../../ponto.cpp ../../teladedesenho.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.ui $(DISTDIR)/
@@ -790,9 +794,17 @@ compiler_lrelease_clean:
 .qm/ComputacaoGrafica_pt_BR.qm: ../../ComputacaoGrafica_pt_BR.ts
 	/Users/fernanda/Qt/6.9.1/macos/bin/lrelease ../../ComputacaoGrafica_pt_BR.ts -qm .qm/ComputacaoGrafica_pt_BR.qm
 
-compiler_rcc_make_all: qrc_qmake_qmake_qm_files.cpp
+compiler_rcc_make_all: qrc_recursos.cpp qrc_qmake_qmake_qm_files.cpp
 compiler_rcc_clean:
-	-$(DEL_FILE) qrc_qmake_qmake_qm_files.cpp
+	-$(DEL_FILE) qrc_recursos.cpp qrc_qmake_qmake_qm_files.cpp
+qrc_recursos.cpp: ../../recursos.qrc \
+		/Users/fernanda/Qt/6.9.1/macos/libexec/rcc \
+		../../Pokemons/UmbreonHighPoly.obj \
+		../../Pokemons/Pokeball_Obj.obj \
+		../../Pokemons/psyduck.obj \
+		../../Pokemons/UmbreonLowPoly.obj
+	/Users/fernanda/Qt/6.9.1/macos/libexec/rcc -name recursos --no-zstd ../../recursos.qrc -o qrc_recursos.cpp
+
 qrc_qmake_qmake_qm_files.cpp: qmake_qmake_qm_files.qrc \
 		/Users/fernanda/Qt/6.9.1/macos/libexec/rcc \
 		.qm/ComputacaoGrafica_pt_BR.qm
@@ -959,6 +971,9 @@ teladedesenho.o: ../../teladedesenho.cpp ../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPen \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpen.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o teladedesenho.o ../../teladedesenho.cpp
+
+qrc_recursos.o: qrc_recursos.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_recursos.o qrc_recursos.cpp
 
 qrc_qmake_qmake_qm_files.o: qrc_qmake_qmake_qm_files.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qmake_qmake_qm_files.o qrc_qmake_qmake_qm_files.cpp
