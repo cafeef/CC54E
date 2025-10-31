@@ -799,9 +799,9 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_recursos.cpp qrc_qmake_qmake_qm_files.cpp
 qrc_recursos.cpp: ../../recursos.qrc \
 		/Users/fernanda/Qt/6.9.1/macos/libexec/rcc \
-		../../Pokemons/UmbreonHighPoly.obj \
-		../../Pokemons/Pokeball_Obj.obj \
-		../../Pokemons/psyduck.obj \
+		../../Pokemons/charizard.obj \
+		../../Pokemons/pikachu.obj \
+		../../Pokemons/weedle.obj \
 		../../Pokemons/UmbreonLowPoly.obj
 	/Users/fernanda/Qt/6.9.1/macos/libexec/rcc -name recursos --no-zstd ../../recursos.qrc -o qrc_recursos.cpp
 

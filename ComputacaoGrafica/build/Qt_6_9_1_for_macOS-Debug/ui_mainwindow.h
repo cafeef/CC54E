@@ -31,6 +31,10 @@ public:
     QWidget *centralwidget;
     TelaDeDesenho *TelaDesenho;
     QWidget *layoutWidget;
+    QVBoxLayout *verticalLayout_10;
+    QWidget *layoutWidget1;
+    QVBoxLayout *verticalLayout_11;
+    QWidget *layoutWidget2;
     QVBoxLayout *verticalLayout_4;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -48,46 +52,31 @@ public:
     QDoubleSpinBox *translateZSpinBox;
     QPushButton *translateButton;
     QVBoxLayout *verticalLayout_2;
-    QHBoxLayout *horizontalLayout_7;
-    QHBoxLayout *horizontalLayout_5;
+    QHBoxLayout *horizontalLayout_18;
+    QVBoxLayout *verticalLayout_8;
     QLabel *LabelComboBox_4;
     QDoubleSpinBox *escaleXSpinBox;
-    QHBoxLayout *horizontalLayout_6;
+    QVBoxLayout *verticalLayout_9;
     QLabel *LabelComboBox_5;
     QDoubleSpinBox *escaleYSpinBox;
-    QHBoxLayout *horizontalLayout_17;
+    QVBoxLayout *verticalLayout_12;
     QLabel *LabelComboBox_9;
     QDoubleSpinBox *escaleZSpinBox;
     QHBoxLayout *horizontalLayout_8;
     QPushButton *escaleButton;
     QPushButton *escaleEixoButton;
-    QHBoxLayout *horizontalLayout_10;
     QVBoxLayout *verticalLayout_3;
-    QPushButton *rotateXButton;
-    QPushButton *rotateYButton;
-    QPushButton *rotateZButton;
     QHBoxLayout *horizontalLayout_9;
-    QLabel *LabelComboBox_6;
-    QSpinBox *rotationAngleSpinBox;
-    QVBoxLayout *verticalLayout_7;
-    QVBoxLayout *verticalLayout_6;
-    QLabel *label;
-    QHBoxLayout *horizontalLayout_11;
-    QPushButton *panLeftButton;
-    QVBoxLayout *verticalLayout_5;
-    QPushButton *panUpButton;
-    QPushButton *panDownButton;
-    QPushButton *panRightButton;
-    QHBoxLayout *horizontalLayout_13;
-    QLabel *label_2;
-    QHBoxLayout *horizontalLayout_12;
-    QPushButton *zoomInButton;
-    QPushButton *zoomOutButton;
-    QHBoxLayout *horizontalLayout_15;
-    QLabel *label_3;
-    QHBoxLayout *horizontalLayout_14;
-    QPushButton *rotateRightButton;
-    QPushButton *rotateLeftButton;
+    QVBoxLayout *verticalLayout_13;
+    QLabel *LabelComboBox_8;
+    QSpinBox *rotationXSpinBox;
+    QVBoxLayout *verticalLayout_14;
+    QLabel *LabelComboBox_10;
+    QSpinBox *rotationYSpinBox;
+    QVBoxLayout *verticalLayout_15;
+    QLabel *LabelComboBox_11;
+    QSpinBox *rotationZSpinBox;
+    QPushButton *rotationEixoButton;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -102,20 +91,32 @@ public:
         TelaDesenho->setGeometry(QRect(60, 10, 971, 701));
         layoutWidget = new QWidget(centralwidget);
         layoutWidget->setObjectName("layoutWidget");
-        layoutWidget->setGeometry(QRect(1151, 10, 336, 565));
-        verticalLayout_4 = new QVBoxLayout(layoutWidget);
+        layoutWidget->setGeometry(QRect(0, 0, 2, 2));
+        verticalLayout_10 = new QVBoxLayout(layoutWidget);
+        verticalLayout_10->setObjectName("verticalLayout_10");
+        verticalLayout_10->setContentsMargins(0, 0, 0, 0);
+        layoutWidget1 = new QWidget(centralwidget);
+        layoutWidget1->setObjectName("layoutWidget1");
+        layoutWidget1->setGeometry(QRect(0, 0, 2, 2));
+        verticalLayout_11 = new QVBoxLayout(layoutWidget1);
+        verticalLayout_11->setObjectName("verticalLayout_11");
+        verticalLayout_11->setContentsMargins(0, 0, 0, 0);
+        layoutWidget2 = new QWidget(centralwidget);
+        layoutWidget2->setObjectName("layoutWidget2");
+        layoutWidget2->setGeometry(QRect(1080, 110, 312, 347));
+        verticalLayout_4 = new QVBoxLayout(layoutWidget2);
         verticalLayout_4->setObjectName("verticalLayout_4");
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName("verticalLayout");
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName("horizontalLayout");
-        LabelComboBox = new QLabel(layoutWidget);
+        LabelComboBox = new QLabel(layoutWidget2);
         LabelComboBox->setObjectName("LabelComboBox");
 
         horizontalLayout->addWidget(LabelComboBox);
 
-        objectSelectorComboBox = new QComboBox(layoutWidget);
+        objectSelectorComboBox = new QComboBox(layoutWidget2);
         objectSelectorComboBox->setObjectName("objectSelectorComboBox");
 
         horizontalLayout->addWidget(objectSelectorComboBox);
@@ -127,12 +128,12 @@ public:
         horizontalLayout_4->setObjectName("horizontalLayout_4");
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName("horizontalLayout_2");
-        LabelComboBox_2 = new QLabel(layoutWidget);
+        LabelComboBox_2 = new QLabel(layoutWidget2);
         LabelComboBox_2->setObjectName("LabelComboBox_2");
 
         horizontalLayout_2->addWidget(LabelComboBox_2);
 
-        translateXSpinBox = new QDoubleSpinBox(layoutWidget);
+        translateXSpinBox = new QDoubleSpinBox(layoutWidget2);
         translateXSpinBox->setObjectName("translateXSpinBox");
         translateXSpinBox->setMinimum(-99.989999999999995);
 
@@ -143,12 +144,12 @@ public:
 
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
-        LabelComboBox_3 = new QLabel(layoutWidget);
+        LabelComboBox_3 = new QLabel(layoutWidget2);
         LabelComboBox_3->setObjectName("LabelComboBox_3");
 
         horizontalLayout_3->addWidget(LabelComboBox_3);
 
-        translateYSpinBox = new QDoubleSpinBox(layoutWidget);
+        translateYSpinBox = new QDoubleSpinBox(layoutWidget2);
         translateYSpinBox->setObjectName("translateYSpinBox");
         translateYSpinBox->setMinimum(-99.989999999999995);
 
@@ -162,12 +163,12 @@ public:
 
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName("horizontalLayout_16");
-        LabelComboBox_7 = new QLabel(layoutWidget);
+        LabelComboBox_7 = new QLabel(layoutWidget2);
         LabelComboBox_7->setObjectName("LabelComboBox_7");
 
         horizontalLayout_16->addWidget(LabelComboBox_7);
 
-        translateZSpinBox = new QDoubleSpinBox(layoutWidget);
+        translateZSpinBox = new QDoubleSpinBox(layoutWidget2);
         translateZSpinBox->setObjectName("translateZSpinBox");
         translateZSpinBox->setMinimum(-99.989999999999995);
 
@@ -176,74 +177,74 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_16);
 
-        translateButton = new QPushButton(layoutWidget);
+        translateButton = new QPushButton(layoutWidget2);
         translateButton->setObjectName("translateButton");
 
         verticalLayout->addWidget(translateButton);
 
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName("verticalLayout_2");
-        horizontalLayout_7 = new QHBoxLayout();
-        horizontalLayout_7->setObjectName("horizontalLayout_7");
-        horizontalLayout_5 = new QHBoxLayout();
-        horizontalLayout_5->setObjectName("horizontalLayout_5");
-        LabelComboBox_4 = new QLabel(layoutWidget);
+        horizontalLayout_18 = new QHBoxLayout();
+        horizontalLayout_18->setObjectName("horizontalLayout_18");
+        verticalLayout_8 = new QVBoxLayout();
+        verticalLayout_8->setObjectName("verticalLayout_8");
+        LabelComboBox_4 = new QLabel(layoutWidget2);
         LabelComboBox_4->setObjectName("LabelComboBox_4");
 
-        horizontalLayout_5->addWidget(LabelComboBox_4);
+        verticalLayout_8->addWidget(LabelComboBox_4);
 
-        escaleXSpinBox = new QDoubleSpinBox(layoutWidget);
+        escaleXSpinBox = new QDoubleSpinBox(layoutWidget2);
         escaleXSpinBox->setObjectName("escaleXSpinBox");
         escaleXSpinBox->setMinimum(0.000000000000000);
 
-        horizontalLayout_5->addWidget(escaleXSpinBox);
+        verticalLayout_8->addWidget(escaleXSpinBox);
 
 
-        horizontalLayout_7->addLayout(horizontalLayout_5);
+        horizontalLayout_18->addLayout(verticalLayout_8);
 
-        horizontalLayout_6 = new QHBoxLayout();
-        horizontalLayout_6->setObjectName("horizontalLayout_6");
-        LabelComboBox_5 = new QLabel(layoutWidget);
+        verticalLayout_9 = new QVBoxLayout();
+        verticalLayout_9->setObjectName("verticalLayout_9");
+        LabelComboBox_5 = new QLabel(layoutWidget2);
         LabelComboBox_5->setObjectName("LabelComboBox_5");
 
-        horizontalLayout_6->addWidget(LabelComboBox_5);
+        verticalLayout_9->addWidget(LabelComboBox_5);
 
-        escaleYSpinBox = new QDoubleSpinBox(layoutWidget);
+        escaleYSpinBox = new QDoubleSpinBox(layoutWidget2);
         escaleYSpinBox->setObjectName("escaleYSpinBox");
         escaleYSpinBox->setMinimum(0.000000000000000);
 
-        horizontalLayout_6->addWidget(escaleYSpinBox);
+        verticalLayout_9->addWidget(escaleYSpinBox);
 
 
-        horizontalLayout_7->addLayout(horizontalLayout_6);
+        horizontalLayout_18->addLayout(verticalLayout_9);
 
-
-        verticalLayout_2->addLayout(horizontalLayout_7);
-
-        horizontalLayout_17 = new QHBoxLayout();
-        horizontalLayout_17->setObjectName("horizontalLayout_17");
-        LabelComboBox_9 = new QLabel(layoutWidget);
+        verticalLayout_12 = new QVBoxLayout();
+        verticalLayout_12->setObjectName("verticalLayout_12");
+        LabelComboBox_9 = new QLabel(layoutWidget2);
         LabelComboBox_9->setObjectName("LabelComboBox_9");
 
-        horizontalLayout_17->addWidget(LabelComboBox_9);
+        verticalLayout_12->addWidget(LabelComboBox_9);
 
-        escaleZSpinBox = new QDoubleSpinBox(layoutWidget);
+        escaleZSpinBox = new QDoubleSpinBox(layoutWidget2);
         escaleZSpinBox->setObjectName("escaleZSpinBox");
         escaleZSpinBox->setMinimum(0.000000000000000);
 
-        horizontalLayout_17->addWidget(escaleZSpinBox);
+        verticalLayout_12->addWidget(escaleZSpinBox);
 
 
-        verticalLayout_2->addLayout(horizontalLayout_17);
+        horizontalLayout_18->addLayout(verticalLayout_12);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_18);
 
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setObjectName("horizontalLayout_8");
-        escaleButton = new QPushButton(layoutWidget);
+        escaleButton = new QPushButton(layoutWidget2);
         escaleButton->setObjectName("escaleButton");
 
         horizontalLayout_8->addWidget(escaleButton);
 
-        escaleEixoButton = new QPushButton(layoutWidget);
+        escaleEixoButton = new QPushButton(layoutWidget2);
         escaleEixoButton->setObjectName("escaleEixoButton");
 
         horizontalLayout_8->addWidget(escaleEixoButton);
@@ -257,142 +258,75 @@ public:
 
         verticalLayout_4->addLayout(verticalLayout);
 
-        horizontalLayout_10 = new QHBoxLayout();
-        horizontalLayout_10->setObjectName("horizontalLayout_10");
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setObjectName("verticalLayout_3");
-        rotateXButton = new QPushButton(layoutWidget);
-        rotateXButton->setObjectName("rotateXButton");
-
-        verticalLayout_3->addWidget(rotateXButton);
-
-        rotateYButton = new QPushButton(layoutWidget);
-        rotateYButton->setObjectName("rotateYButton");
-
-        verticalLayout_3->addWidget(rotateYButton);
-
-        rotateZButton = new QPushButton(layoutWidget);
-        rotateZButton->setObjectName("rotateZButton");
-
-        verticalLayout_3->addWidget(rotateZButton);
-
-
-        horizontalLayout_10->addLayout(verticalLayout_3);
-
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setObjectName("horizontalLayout_9");
-        LabelComboBox_6 = new QLabel(layoutWidget);
-        LabelComboBox_6->setObjectName("LabelComboBox_6");
+        verticalLayout_13 = new QVBoxLayout();
+        verticalLayout_13->setObjectName("verticalLayout_13");
+        LabelComboBox_8 = new QLabel(layoutWidget2);
+        LabelComboBox_8->setObjectName("LabelComboBox_8");
+        LabelComboBox_8->setMaximumSize(QSize(16777215, 50));
 
-        horizontalLayout_9->addWidget(LabelComboBox_6);
+        verticalLayout_13->addWidget(LabelComboBox_8);
 
-        rotationAngleSpinBox = new QSpinBox(layoutWidget);
-        rotationAngleSpinBox->setObjectName("rotationAngleSpinBox");
-        rotationAngleSpinBox->setMinimum(-360);
-        rotationAngleSpinBox->setMaximum(360);
+        rotationXSpinBox = new QSpinBox(layoutWidget2);
+        rotationXSpinBox->setObjectName("rotationXSpinBox");
+        rotationXSpinBox->setMinimum(-360);
+        rotationXSpinBox->setMaximum(360);
 
-        horizontalLayout_9->addWidget(rotationAngleSpinBox);
-
-
-        horizontalLayout_10->addLayout(horizontalLayout_9);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_10);
-
-        verticalLayout_7 = new QVBoxLayout();
-        verticalLayout_7->setObjectName("verticalLayout_7");
-        verticalLayout_6 = new QVBoxLayout();
-        verticalLayout_6->setObjectName("verticalLayout_6");
-        label = new QLabel(layoutWidget);
-        label->setObjectName("label");
-
-        verticalLayout_6->addWidget(label);
-
-        horizontalLayout_11 = new QHBoxLayout();
-        horizontalLayout_11->setObjectName("horizontalLayout_11");
-        panLeftButton = new QPushButton(layoutWidget);
-        panLeftButton->setObjectName("panLeftButton");
-
-        horizontalLayout_11->addWidget(panLeftButton);
-
-        verticalLayout_5 = new QVBoxLayout();
-        verticalLayout_5->setObjectName("verticalLayout_5");
-        panUpButton = new QPushButton(layoutWidget);
-        panUpButton->setObjectName("panUpButton");
-
-        verticalLayout_5->addWidget(panUpButton);
-
-        panDownButton = new QPushButton(layoutWidget);
-        panDownButton->setObjectName("panDownButton");
-
-        verticalLayout_5->addWidget(panDownButton);
+        verticalLayout_13->addWidget(rotationXSpinBox);
 
 
-        horizontalLayout_11->addLayout(verticalLayout_5);
+        horizontalLayout_9->addLayout(verticalLayout_13);
 
-        panRightButton = new QPushButton(layoutWidget);
-        panRightButton->setObjectName("panRightButton");
+        verticalLayout_14 = new QVBoxLayout();
+        verticalLayout_14->setObjectName("verticalLayout_14");
+        verticalLayout_14->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
+        LabelComboBox_10 = new QLabel(layoutWidget2);
+        LabelComboBox_10->setObjectName("LabelComboBox_10");
+        LabelComboBox_10->setMaximumSize(QSize(16777215, 50));
 
-        horizontalLayout_11->addWidget(panRightButton);
+        verticalLayout_14->addWidget(LabelComboBox_10);
 
+        rotationYSpinBox = new QSpinBox(layoutWidget2);
+        rotationYSpinBox->setObjectName("rotationYSpinBox");
+        rotationYSpinBox->setMinimum(-360);
+        rotationYSpinBox->setMaximum(360);
 
-        verticalLayout_6->addLayout(horizontalLayout_11);
-
-
-        verticalLayout_7->addLayout(verticalLayout_6);
-
-        horizontalLayout_13 = new QHBoxLayout();
-        horizontalLayout_13->setObjectName("horizontalLayout_13");
-        label_2 = new QLabel(layoutWidget);
-        label_2->setObjectName("label_2");
-
-        horizontalLayout_13->addWidget(label_2);
-
-        horizontalLayout_12 = new QHBoxLayout();
-        horizontalLayout_12->setObjectName("horizontalLayout_12");
-        zoomInButton = new QPushButton(layoutWidget);
-        zoomInButton->setObjectName("zoomInButton");
-
-        horizontalLayout_12->addWidget(zoomInButton);
-
-        zoomOutButton = new QPushButton(layoutWidget);
-        zoomOutButton->setObjectName("zoomOutButton");
-
-        horizontalLayout_12->addWidget(zoomOutButton);
+        verticalLayout_14->addWidget(rotationYSpinBox);
 
 
-        horizontalLayout_13->addLayout(horizontalLayout_12);
+        horizontalLayout_9->addLayout(verticalLayout_14);
+
+        verticalLayout_15 = new QVBoxLayout();
+        verticalLayout_15->setObjectName("verticalLayout_15");
+        LabelComboBox_11 = new QLabel(layoutWidget2);
+        LabelComboBox_11->setObjectName("LabelComboBox_11");
+        LabelComboBox_11->setMaximumSize(QSize(16777215, 50));
+
+        verticalLayout_15->addWidget(LabelComboBox_11);
+
+        rotationZSpinBox = new QSpinBox(layoutWidget2);
+        rotationZSpinBox->setObjectName("rotationZSpinBox");
+        rotationZSpinBox->setMinimum(-360);
+        rotationZSpinBox->setMaximum(360);
+
+        verticalLayout_15->addWidget(rotationZSpinBox);
 
 
-        verticalLayout_7->addLayout(horizontalLayout_13);
-
-        horizontalLayout_15 = new QHBoxLayout();
-        horizontalLayout_15->setObjectName("horizontalLayout_15");
-        label_3 = new QLabel(layoutWidget);
-        label_3->setObjectName("label_3");
-
-        horizontalLayout_15->addWidget(label_3);
-
-        horizontalLayout_14 = new QHBoxLayout();
-        horizontalLayout_14->setObjectName("horizontalLayout_14");
-        rotateRightButton = new QPushButton(layoutWidget);
-        rotateRightButton->setObjectName("rotateRightButton");
-
-        horizontalLayout_14->addWidget(rotateRightButton);
-
-        rotateLeftButton = new QPushButton(layoutWidget);
-        rotateLeftButton->setObjectName("rotateLeftButton");
-
-        horizontalLayout_14->addWidget(rotateLeftButton);
+        horizontalLayout_9->addLayout(verticalLayout_15);
 
 
-        horizontalLayout_15->addLayout(horizontalLayout_14);
+        verticalLayout_3->addLayout(horizontalLayout_9);
+
+        rotationEixoButton = new QPushButton(layoutWidget2);
+        rotationEixoButton->setObjectName("rotationEixoButton");
+
+        verticalLayout_3->addWidget(rotationEixoButton);
 
 
-        verticalLayout_7->addLayout(horizontalLayout_15);
-
-
-        verticalLayout_4->addLayout(verticalLayout_7);
+        verticalLayout_4->addLayout(verticalLayout_3);
 
         MainWindow->setCentralWidget(centralwidget);
         statusbar = new QStatusBar(MainWindow);
@@ -417,21 +351,10 @@ public:
         LabelComboBox_9->setText(QCoreApplication::translate("MainWindow", "Escala Z", nullptr));
         escaleButton->setText(QCoreApplication::translate("MainWindow", "Escalonar na origem", nullptr));
         escaleEixoButton->setText(QCoreApplication::translate("MainWindow", "Escalonar no eixo", nullptr));
-        rotateXButton->setText(QCoreApplication::translate("MainWindow", "Rotacionar em X", nullptr));
-        rotateYButton->setText(QCoreApplication::translate("MainWindow", "Rotacionar em Y", nullptr));
-        rotateZButton->setText(QCoreApplication::translate("MainWindow", "Rotacionar em Z", nullptr));
-        LabelComboBox_6->setText(QCoreApplication::translate("MainWindow", "\303\202ngulo", nullptr));
-        label->setText(QCoreApplication::translate("MainWindow", "Navega\303\247\303\243o", nullptr));
-        panLeftButton->setText(QCoreApplication::translate("MainWindow", "\342\227\200", nullptr));
-        panUpButton->setText(QCoreApplication::translate("MainWindow", "\342\226\262", nullptr));
-        panDownButton->setText(QCoreApplication::translate("MainWindow", "\342\226\274", nullptr));
-        panRightButton->setText(QCoreApplication::translate("MainWindow", "\342\226\266", nullptr));
-        label_2->setText(QCoreApplication::translate("MainWindow", "Zoom", nullptr));
-        zoomInButton->setText(QCoreApplication::translate("MainWindow", "+", nullptr));
-        zoomOutButton->setText(QCoreApplication::translate("MainWindow", "-", nullptr));
-        label_3->setText(QCoreApplication::translate("MainWindow", "Rota\303\247\303\243o", nullptr));
-        rotateRightButton->setText(QCoreApplication::translate("MainWindow", "\342\206\273", nullptr));
-        rotateLeftButton->setText(QCoreApplication::translate("MainWindow", "\342\206\272", nullptr));
+        LabelComboBox_8->setText(QCoreApplication::translate("MainWindow", "Rotacionar X", nullptr));
+        LabelComboBox_10->setText(QCoreApplication::translate("MainWindow", "Rotacionar Y", nullptr));
+        LabelComboBox_11->setText(QCoreApplication::translate("MainWindow", "Rotacionar Z", nullptr));
+        rotationEixoButton->setText(QCoreApplication::translate("MainWindow", "Rotacionar no eixo", nullptr));
     } // retranslateUi
 
 };

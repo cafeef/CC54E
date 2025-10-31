@@ -10,27 +10,19 @@ class TelaDeDesenho : public QWidget {
 
 public:
     explicit TelaDeDesenho(QWidget *parent = nullptr);
-    void setDisplayFile(QVector<ObjetoVirtual> *ptr_df);
 
-public slots:
-    // Slots para a navegação 3D (controlados pela MainWindow)
-    void rotacionarCamera(double dx, double dy, double dz);
-    void moverCamera(double dx, double dy, double dz);
-    void aplicarZoom(double fator);
+    void setDisplayFile(QVector<ObjetoVirtual> *ptr_df);
+    void setIndiceDaWindow(int indice);
+
+    // Constante da margem (pública para a MainWindow poder ler)
+    const double MARGEM_VIEWPORT = 20.0;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
     QVector<ObjetoVirtual> *displayFile_ptr = nullptr;
-
-    // Constante da margem (como antes)
-    const double MARGEM_VIEWPORT = 20.0;
-
-    // --- Câmera 3D Simples ---
-    Ponto cameraPos;    // Posição da câmera no mundo
-    double zoom;        // Fator de zoom da projeção ortogonal
-    double rotX, rotY;  // Rotação da câmera
+    int indiceDaWindow = -1; // Índice para encontrar a câmera no displayFile
 
     // Função de ajuda para a pipeline 3D
     Matriz calcularMatrizDeVisualizacao() const;

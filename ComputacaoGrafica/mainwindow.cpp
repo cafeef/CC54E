@@ -12,31 +12,51 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // --- Etapa 1: Criar a Window como um Objeto ---
+    ObjetoVirtual windowObj;
+    windowObj.nome = "#WINDOW_CAMERA";
+    windowObj.tipo = TipoObjeto::Mesh3D; // É um "objeto"
+    // Os vértices e faces ficam vazios, pois ela não será desenhada.
+    // O estado inicial é definido pelas suas propriedades de câmera:
+    windowObj.camera_centro = Ponto(0, 0, 500); // Posição Z afastada
+    windowObj.camera_zoom = 1.0; // Zoom inicial padrão
+
+    displayFile.append(windowObj);
+    indiceDaWindow = displayFile.size() - 1; // Guarda o índice
+
     // --- CARREGAR OS POKÉMONS ---
     // !!! MUDE ESTES CAMINHOS PARA ONDE VOCÊ GUARDOU OS SEUS FICHEIROS .obj !!!
     //QString caminhoPokebola = ":/Pokemons/Pokeball_Obj.obj";
     //QString caminhoPsyduck = ":/Pokemons/psyduck.obj";
-    QString caminhoUmbreonHighPoly = ":/Pokemons/UmbreonHighPoly.obj";
     QString caminhoUmbreonLowPoly = ":/Pokemons/UmbreonLowPoly.obj";
+    QString caminhoCharizard = ":/Pokemons/charizard.obj";
+    QString caminhoPikachu = ":/Pokemons/pikachu.obj";
 
     //ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
-    //ObjetoVirtual psyduck = carregarObjetoOBJ(caminhoPsyduck, "Psyduck", Qt::blue);
-    ObjetoVirtual umbreonhigh = carregarObjetoOBJ(caminhoUmbreonHighPoly, "Umbreon High", Qt::white);
-    ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon Low", Qt::yellow);
+    ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon Low", Qt::white);
+    ObjetoVirtual pikachu = carregarObjetoOBJ(caminhoPikachu, "Pikachu", Qt::yellow);
+    ObjetoVirtual charizard = carregarObjetoOBJ(caminhoCharizard, "Charizard", QColorConstants::Svg::orange);
 
     // --- Posicionar os Pokémons na cena 3D ---
     // (Ajuste estes valores depois de executar pela primeira vez)
-    //pokebola.escalonarEixo(0.05, 0.05, 0.05); // (Este pode ser grande)
+    charizard.escalonarEixo(0.3, 0.3, 0.3);
+    charizard.transladar(-5, 0, 0);
+    charizard.rotacionarEixoX(90);
+    pikachu.escalonarEixo(1.1, 1.1, 1.1);
+    pikachu.transladar(5, -1, 0);
 
 
     //displayFile.append(pokebola);
-    //displayFile.append(psyduck);
-    displayFile.append(umbreonhigh);
     displayFile.append(umbreonlow);
+    displayFile.append(charizard);
+    displayFile.append(pikachu);
     // ------------------------------------
 
     // Conecta o display file à tela
     ui->TelaDesenho->setDisplayFile(&displayFile);
+    ui->TelaDesenho->setIndiceDaWindow(indiceDaWindow); // Diz à tela onde está a câmera
+
+    ajustarWindowParaCena(); // Ajusta o zoom e centro da câmera
 
     // Preenche a ComboBox com os nomes dos objetos
     atualizarComboBoxDeObjetos();
@@ -44,6 +64,57 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+// --- Esta é a sua nova função de "Enquadrar Cena" ---
+void MainWindow::ajustarWindowParaCena() {
+    if (indiceDaWindow == -1 || displayFile.size() <= 1) return;
+
+    // 1. Encontra o Bounding Box 3D de todos os objetos (menos a câmera)
+    double minX = std::numeric_limits<double>::max();
+    double minY = std::numeric_limits<double>::max();
+    double maxX = std::numeric_limits<double>::lowest();
+    double maxY = std::numeric_limits<double>::lowest();
+    bool algumPontoEncontrado = false;
+
+    for (int i = 0; i < displayFile.size(); ++i) {
+        if (i == indiceDaWindow) continue; // Pula a câmera
+        for (const Ponto &v : displayFile[i].vertices) {
+            if (v.x() < minX) minX = v.x();
+            if (v.x() > maxX) maxX = v.x();
+            if (v.y() < minY) minY = v.y();
+            if (v.y() > maxY) maxY = v.y();
+            algumPontoEncontrado = true;
+        }
+    }
+    if (!algumPontoEncontrado) return;
+
+    // 2. Calcula o centro e o tamanho da cena
+    Ponto centroCena((minX + maxX) / 2.0, (minY + maxY) / 2.0, 0); // Focamos em X e Y
+    double larguraCena = maxX - minX;
+    double alturaCena = maxY - minY;
+
+    if (larguraCena == 0 || alturaCena == 0) return;
+
+    // 3. Pega a área da viewport da TelaDeDesenho
+    double vp_largura = ui->TelaDesenho->width() - 2 * ui->TelaDesenho->MARGEM_VIEWPORT;
+    double vp_altura = ui->TelaDesenho->height() - 2 * ui->TelaDesenho->MARGEM_VIEWPORT;
+
+    // 4. Calcula o fator de zoom necessário
+    // (Lembre-se: zoom = 1/r, então r = 1/zoom)
+    // O raio de visão 'r' precisa de ser metade do maior lado da cena.
+    double r_necessario = std::max(larguraCena, alturaCena) / 2.0;
+
+    // Adiciona uma margem de 10%
+    r_necessario *= 1.1;
+
+    // O zoom é o inverso do raio
+    double novo_zoom = 1.0 / r_necessario;
+
+    // 5. Atualiza o objeto Window
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+    windowObj.camera_centro = Ponto(centroCena.x(), centroCena.y(), 500); // Centra a câmera e afasta em Z
+    windowObj.camera_zoom = novo_zoom; // Define o zoom correto
 }
 
 // --- Carregador de .obj ---
@@ -100,40 +171,6 @@ void MainWindow::atualizarComboBoxDeObjetos() {
     }
 }
 
-// --- SLOTS DE NAVEGAÇÃO (Câmera) ---
-// Estes botões agora controlam a câmera na TelaDeDesenho
-
-void MainWindow::on_panUpButton_clicked() {
-    ui->TelaDesenho->moverCamera(0, 10, 0); // Pan Cima
-}
-void MainWindow::on_panDownButton_clicked() {
-    ui->TelaDesenho->moverCamera(0, -10, 0); // Pan Baixo
-}
-void MainWindow::on_panLeftButton_clicked() {
-    ui->TelaDesenho->moverCamera(-10, 0, 0); // Pan Esquerda
-}
-void MainWindow::on_panRightButton_clicked() {
-    ui->TelaDesenho->moverCamera(10, 0, 0); // Pan Direita
-}
-
-void MainWindow::on_zoomInButton_clicked() {
-    ui->TelaDesenho->aplicarZoom(1.1); // Aumenta o zoom
-}
-void MainWindow::on_zoomOutButton_clicked() {
-    ui->TelaDesenho->aplicarZoom(0.9); // Diminui o zoom
-}
-
-// Rotação da Câmera (orbitar)
-void MainWindow::on_rotateLeftButton_clicked() {
-    ui->TelaDesenho->rotacionarCamera(0, -5, 0); // Gira em Y
-}
-void MainWindow::on_rotateRightButton_clicked() {
-    ui->TelaDesenho->rotacionarCamera(0, 5, 0); // Gira em Y
-}
-// (Você pode querer ligar o pan up/down à rotação em X)
-// ui->TelaDesenho->rotacionarCamera(-5, 0, 0); // Gira em X
-
-
 // --- SLOTS DE TRANSFORMAÇÃO DE OBJETO (3D) ---
 // Estes botões transformam o objeto selecionado
 
@@ -153,22 +190,33 @@ void MainWindow::on_translateButton_clicked() {
     ui->TelaDesenho->update();
 }
 
-void MainWindow::on_rotationEixoButton_clicked() {
+void MainWindow::on_rotationEixoButton_clicked()
+{
     int indice = ui->objectSelectorComboBox->currentIndex();
-    if (indice < 0) return;
+    if (indice < 0) return; // Nenhum objeto selecionado
 
-    // Lê o ângulo do novo SpinBox
-    double angulo = ui->rotationZSpinBox->value();
+    // 1. Lê os valores de ângulo dos três novos SpinBoxes
+    double anguloX = ui->rotationXSpinBox->value();
+    double anguloY = ui->rotationYSpinBox->value();
+    double anguloZ = ui->rotationZSpinBox->value();
 
-    // Verifica qual eixo está selecionado
-    if (ui->rotateXButton->isChecked()) {
-        displayFile[indice].rotacionarEixoX(angulo);
-    } else if (ui->rotateYButton->isChecked()) {
-        displayFile[indice].rotacionarEixoY(angulo);
-    } else if (ui->rotateZButton->isChecked()) {
-        displayFile[indice].rotacionarEixoZ(angulo);
+    // 2. Aplica as rotações, uma por uma, se o valor for diferente de zero.
+    //    A ordem importa (normalmente Z, depois Y, depois X),
+    //    mas aplicar sequencialmente assim também funciona.
+
+    if (anguloX != 0.0) {
+        displayFile[indice].rotacionarEixoX(anguloX);
     }
 
+    if (anguloY != 0.0) {
+        displayFile[indice].rotacionarEixoY(anguloY);
+    }
+
+    if (anguloZ != 0.0) {
+        displayFile[indice].rotacionarEixoZ(anguloZ);
+    }
+
+    // 4. Atualiza a tela para mostrar a mudança
     ui->TelaDesenho->update();
 }
 

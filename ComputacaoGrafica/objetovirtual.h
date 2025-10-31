@@ -37,6 +37,16 @@ public:
 
     // Função de ajuda para encontrar o centro 3D
     Ponto calcularCentro() const;
+
+    // --- Propriedades da Câmera ---
+    // (Usado apenas se nome == "#WINDOW_CAMERA")
+    Ponto camera_centro;
+    double camera_rotX = 0.0;
+    double camera_rotY = 0.0;
+    double camera_rotZ = 0.0;
+    double camera_zoom = 1.0;
+
+    void camera_rotate(double d_rotX, double d_rotY);
 };
 
 #endif // OBJETOVIRTUAL_H
