@@ -52,7 +52,7 @@
       <x>1140</x>
       <y>120</y>
       <width>312</width>
-      <height>347</height>
+      <height>414</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -313,6 +313,33 @@
         <widget class="QPushButton" name="rotationEixoButton">
          <property name="text">
           <string>Rotacionar no eixo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Projeção</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioOrtogonal">
+         <property name="text">
+          <string>Ortogonal</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioPerspectiva">
+         <property name="text">
+          <string>Perspectiva</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
         </widget>
        </item>

@@ -22,6 +22,9 @@ private slots:
     void on_translateButton_clicked();
     void on_rotationEixoButton_clicked();
     void on_escaleEixoButton_clicked();
+    void on_radioOrtogonal_toggled(bool checked);
+    void on_radioPerspectiva_toggled(bool checked);
+    void lidarComZoom(double fator);
 
 private:
     Ui::MainWindow *ui;

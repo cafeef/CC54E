@@ -4,6 +4,7 @@
 #include <QPen>
 #include <cmath>
 #include <algorithm> // Para std::min
+#include <QWheelEvent>
 
 TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent) {
     // A câmera agora é gerenciada pela MainWindow
@@ -15,6 +16,12 @@ void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *ptr_df) {
 
 void TelaDeDesenho::setIndiceDaWindow(int indice) {
     this->indiceDaWindow = indice;
+}
+
+// Implementação do slot
+void TelaDeDesenho::setProjecao(ProjecaoTipo tipo) {
+    this->projecaoAtual = tipo;
+    update(); // Redesenha a cena com a nova projeção
 }
 
 Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const {
@@ -47,24 +54,36 @@ Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const {
     Matriz T_vp = Matriz::criarMatrizTranslacao(vp_x_min + vp_largura / 2.0, vp_y_min + vp_altura / 2.0, 0);
     Matriz M_viewport = T_vp * S_vp;
 
-    // --- Etapa 4: Matriz de Projeção Ortogonal (Câmera -> SCN) ---
-    double r = 1.0 / zoom;
-    double l = -r;
-    double t = 1.0 / zoom;
-    double b = -r;
-    double n = 1.0;
-    double f = 1000.0;
+    // --- Etapa 4: Matriz de Projeção (ORTOGONAL ou PERSPECTIVA) ---
+    Matriz M_proj; // Matriz de projeção
+    double aspect = (vp_altura > 0) ? (vp_largura / vp_altura) : 1.0;
+    double n = 1.0;    // Near plane
+    double f = 1000.0; // Far plane (distância de visualização)
 
-    Matriz M_proj;
-    M_proj.dados[0][0] = 2.0 / (r - l);
-    M_proj.dados[1][1] = 2.0 / (t - b);
-    M_proj.dados[2][2] = -2.0 / (f - n);
-    M_proj.dados[3][3] = 1.0;
-    M_proj.dados[0][3] = -(r + l) / (r - l);
-    M_proj.dados[1][3] = -(t + b) / (t - b);
-    M_proj.dados[2][3] = -(f + n) / (f - n);
+    if (projecaoAtual == ProjecaoTipo::ORTOGONAL) {
+        // --- CÓDIGO DA PROJEÇÃO ORTOGONAL (o que você já tinha) ---
+        double zoom = (*displayFile_ptr)[indiceDaWindow].camera_zoom;
+        double r = (vp_largura / menorDimensaoVP) / zoom;
+        double l = -r;
+        double t = (vp_altura / menorDimensaoVP) / zoom;
+        double b = -t;
+
+        M_proj.dados[0][0] = 2.0 / (r - l);
+        M_proj.dados[1][1] = 2.0 / (t - b);
+        M_proj.dados[2][2] = -2.0 / (f - n);
+        M_proj.dados[3][3] = 1.0;
+        M_proj.dados[0][3] = -(r + l) / (r - l);
+        M_proj.dados[1][3] = -(t + b) / (t - b);
+        M_proj.dados[2][3] = -(f + n) / (f - n);
+
+    } else {
+        // --- CÓDIGO DA PROJEÇÃO EM PERSPECTIVA (NOVO) ---
+        double fov = 60.0; // Campo de visão de 60 graus (um bom padrão)
+        M_proj = Matriz::criarMatrizPerspectiva(fov, aspect, n, f);
+    }
 
     // --- Etapa 5: Matriz de Câmera (Mundo -> Câmera) ---
+    // (SEM MUDANÇAS - O seu código M_camera continua aqui)
     Matriz R_cam = Matriz::criarMatrizRotacaoY(-rotY) * Matriz::criarMatrizRotacaoX(-rotX);
     Matriz T_cam = Matriz::criarMatrizTranslacao(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
     Matriz M_camera = R_cam * T_cam;
@@ -120,4 +139,19 @@ void TelaDeDesenho::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(Qt::gray, 1));
     painter.setBrush(Qt::NoBrush);
     painter.drawRect(viewportRect);
+}
+
+void TelaDeDesenho::wheelEvent(QWheelEvent *event)
+{
+    // Verifica para que lado a roda girou
+    double delta = event->angleDelta().y();
+
+    // Define o fator de zoom (1.1 para "para dentro", 0.9 para "para fora")
+    double fator = (delta > 0) ? 1.1 : 0.9;
+
+    // Emite o sinal com o fator de zoom
+    emit zoomRequisitado(fator);
+
+    // Aceita o evento para que ele não seja propagado
+    event->accept();
 }

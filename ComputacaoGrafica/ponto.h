@@ -15,6 +15,11 @@ public:
     double x() const;
     double y() const;
     double z() const;
+
+    // Setters
+    void setX(double novoX);
+    void setY(double novoY);
+    void setZ(double novoZ);
 };
 
 #endif // PONTO_H

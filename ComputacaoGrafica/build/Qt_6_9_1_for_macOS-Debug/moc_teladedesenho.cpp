@@ -38,10 +38,24 @@ template <> constexpr inline auto TelaDeDesenho::qt_create_metaobjectdata<qt_met
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "TelaDeDesenho"
+        "TelaDeDesenho",
+        "zoomRequisitado",
+        "",
+        "fator",
+        "setProjecao",
+        "ProjecaoTipo",
+        "tipo"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Signal 'zoomRequisitado'
+        QtMocHelpers::SignalData<void(double)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Double, 3 },
+        }}),
+        // Slot 'setProjecao'
+        QtMocHelpers::SlotData<void(ProjecaoTipo)>(4, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 5, 6 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,10 +77,17 @@ Q_CONSTINIT const QMetaObject TelaDeDesenho::staticMetaObject = { {
 void TelaDeDesenho::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<TelaDeDesenho *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
-    (void)_a;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->zoomRequisitado((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 1: _t->setProjecao((*reinterpret_cast< std::add_pointer_t<ProjecaoTipo>>(_a[1]))); break;
+        default: ;
+        }
+    }
+    if (_c == QMetaObject::IndexOfMethod) {
+        if (QtMocHelpers::indexOfMethod<void (TelaDeDesenho::*)(double )>(_a, &TelaDeDesenho::zoomRequisitado, 0))
+            return;
+    }
 }
 
 const QMetaObject *TelaDeDesenho::metaObject() const
@@ -85,6 +106,24 @@ void *TelaDeDesenho::qt_metacast(const char *_clname)
 int TelaDeDesenho::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 2)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 2;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 2)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 2;
+    }
     return _id;
+}
+
+// SIGNAL 0
+void TelaDeDesenho::zoomRequisitado(double _t1)
+{
+    QMetaObject::activate<void>(this, &staticMetaObject, 0, nullptr, _t1);
 }
 QT_WARNING_POP

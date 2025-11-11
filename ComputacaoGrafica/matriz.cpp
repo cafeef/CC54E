@@ -61,6 +61,25 @@ Matriz Matriz::criarMatrizRotacaoZ(double anguloGraus) {
     return R;
 }
 
+Matriz Matriz::criarMatrizPerspectiva(double fovGraus, double aspect, double near, double far) {
+    // Esta é a matriz de projeção em perspectiva padrão (OpenGL style)
+    // que mapeia para o SCN (-1 a 1) e coloca o Z no W para a divisão.
+
+    Matriz P; // Começa como identidade 4x4
+    for(int i=0; i<4; ++i) for(int j=0; j<4; ++j) P.dados[i][j] = 0.0; // Zera a matriz
+
+    double fovRad = fovGraus * M_PI / 180.0;
+    double tanHalfFovy = tan(fovRad / 2.0);
+
+    P.dados[0][0] = 1.0 / (aspect * tanHalfFovy);
+    P.dados[1][1] = 1.0 / (tanHalfFovy);
+    P.dados[2][2] = -(far + near) / (far - near);
+    P.dados[2][3] = -(2.0 * far * near) / (far - near);
+    P.dados[3][2] = -1.0;
+
+    return P;
+}
+
 Matriz Matriz::operator*(const Matriz& outra) const {
     Matriz resultado;
     for (int i = 0; i < 4; ++i) {

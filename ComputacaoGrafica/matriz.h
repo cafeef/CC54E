@@ -21,6 +21,7 @@ public:
     static Matriz criarMatrizRotacaoX(double anguloGraus);
     static Matriz criarMatrizRotacaoY(double anguloGraus);
     static Matriz criarMatrizRotacaoZ(double anguloGraus);
+    static Matriz criarMatrizPerspectiva(double fovGraus, double aspect, double near, double far);
 
     // Operador de multiplicação
     Matriz operator*(const Matriz& outra) const;

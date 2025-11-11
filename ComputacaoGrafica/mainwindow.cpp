@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->TelaDesenho, &TelaDeDesenho::zoomRequisitado, this, &MainWindow::lidarComZoom);
 
     // --- Etapa 1: Criar a Window como um Objeto ---
     ObjetoVirtual windowObj;
@@ -70,11 +71,10 @@ MainWindow::~MainWindow() {
 void MainWindow::ajustarWindowParaCena() {
     if (indiceDaWindow == -1 || displayFile.size() <= 1) return;
 
-    // 1. Encontra o Bounding Box 3D de todos os objetos (menos a câmera)
-    double minX = std::numeric_limits<double>::max();
-    double minY = std::numeric_limits<double>::max();
-    double maxX = std::numeric_limits<double>::lowest();
-    double maxY = std::numeric_limits<double>::lowest();
+    // --- Etapa 1: Encontrar o Bounding Box 3D de todos os objetos ---
+    // (O seu código para isto, que já está no seu ficheiro, está perfeito)
+    double minX = std::numeric_limits<double>::max(); double minY = minX; double minZ = minX;
+    double maxX = std::numeric_limits<double>::lowest(); double maxY = maxX; double maxZ = maxX;
     bool algumPontoEncontrado = false;
 
     for (int i = 0; i < displayFile.size(); ++i) {
@@ -84,37 +84,64 @@ void MainWindow::ajustarWindowParaCena() {
             if (v.x() > maxX) maxX = v.x();
             if (v.y() < minY) minY = v.y();
             if (v.y() > maxY) maxY = v.y();
+            if (v.z() < minZ) minZ = v.z();
+            if (v.z() > maxZ) maxZ = v.z();
             algumPontoEncontrado = true;
         }
     }
     if (!algumPontoEncontrado) return;
 
-    // 2. Calcula o centro e o tamanho da cena
-    Ponto centroCena((minX + maxX) / 2.0, (minY + maxY) / 2.0, 0); // Focamos em X e Y
+    // --- Etapa 2: Calcular centro e tamanho da cena ---
+    Ponto centroCena((minX + maxX) / 2.0, (minY + maxY) / 2.0, (minZ + maxZ) / 2.0);
     double larguraCena = maxX - minX;
     double alturaCena = maxY - minY;
 
-    if (larguraCena == 0 || alturaCena == 0) return;
-
-    // 3. Pega a área da viewport da TelaDeDesenho
+    // --- Etapa 3: Pegar a área da viewport ---
     double vp_largura = ui->TelaDesenho->width() - 2 * ui->TelaDesenho->MARGEM_VIEWPORT;
     double vp_altura = ui->TelaDesenho->height() - 2 * ui->TelaDesenho->MARGEM_VIEWPORT;
+    if (vp_largura < 1 || vp_altura < 1) return;
+    double aspect = vp_largura / vp_altura;
 
-    // 4. Calcula o fator de zoom necessário
-    // (Lembre-se: zoom = 1/r, então r = 1/zoom)
-    // O raio de visão 'r' precisa de ser metade do maior lado da cena.
-    double r_necessario = std::max(larguraCena, alturaCena) / 2.0;
-
-    // Adiciona uma margem de 10%
-    r_necessario *= 1.1;
-
-    // O zoom é o inverso do raio
-    double novo_zoom = 1.0 / r_necessario;
-
-    // 5. Atualiza o objeto Window
+    // --- Etapa 4: Calcular o ajuste correto (A LÓGICA NOVA) ---
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
-    windowObj.camera_centro = Ponto(centroCena.x(), centroCena.y(), 500); // Centra a câmera e afasta em Z
-    windowObj.camera_zoom = novo_zoom; // Define o zoom correto
+
+    if (ui->radioOrtogonal->isChecked()) {
+        // --- AJUSTE ORTOGONAL ---
+        // (Calcula o 'camera_zoom' necessário)
+
+        // Descobre o "raio" de visão necessário em X e Y
+        double r_necessario_x = larguraCena / 2.0;
+        double r_necessario_y = (alturaCena / 2.0) * aspect; // Ajusta pela proporção
+
+        // O raio de visão final é o maior dos dois, com uma margem
+        double r_necessario = std::max(r_necessario_x, r_necessario_y) * 1.1;
+        if (r_necessario < 1e-6) r_necessario = 1.0;
+
+        double novo_zoom = 1.0 / r_necessario;
+        double z_camera = centroCena.z() + std::max(larguraCena, alturaCena) + 100; // Recuado
+
+        windowObj.camera_centro = Ponto(centroCena.x(), centroCena.y(), z_camera);
+        windowObj.camera_zoom = novo_zoom;
+
+    } else {
+        // --- AJUSTE PERSPECTIVA ---
+        // (Calcula a distância Z ('camera_centro.z') necessária)
+
+        double fovGraus = 60.0; // O mesmo FOV da sua função de renderização
+        double fovRad = fovGraus * M_PI / 180.0;
+
+        // Encontra o maior "raio" da cena (altura ou largura)
+        double raioCena = std::max(larguraCena, alturaCena) / 2.0;
+
+        // Usa trigonometria (tan(FOV/2) = Raio / Distância)
+        double distancia = raioCena / tan(fovRad / 2.0);
+
+        // Afasta a câmera para esta distância, mais uma margem de 10%
+        double z_camera = centroCena.z() + distancia * 1.1;
+
+        windowObj.camera_centro = Ponto(centroCena.x(), centroCena.y(), z_camera);
+        windowObj.camera_zoom = 1.0; // Zoom não é usado diretamente em perspectiva
+    }
 }
 
 // --- Carregador de .obj ---
@@ -236,5 +263,71 @@ void MainWindow::on_escaleEixoButton_clicked() {
     if (sz == 0) sz = 1.0;
 
     displayFile[indice].escalonarEixo(sx, sy, sz);
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_radioOrtogonal_toggled(bool checked)
+{
+    if (checked) {
+        ui->TelaDesenho->setProjecao(TelaDeDesenho::ProjecaoTipo::ORTOGONAL);
+    }
+    ajustarWindowParaCena(); // Re-centraliza a câmera para o modo Perspectiva
+}
+
+void MainWindow::on_radioPerspectiva_toggled(bool checked)
+{
+    if (checked) {
+        ui->TelaDesenho->setProjecao(TelaDeDesenho::ProjecaoTipo::PERSPECTIVA);
+    }
+    ajustarWindowParaCena(); // Re-centraliza a câmera para o modo Perspectiva
+}
+
+void MainWindow::lidarComZoom(double fator)
+{
+    if (indiceDaWindow == -1) return;
+
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    if (ui->radioOrtogonal->isChecked()) {
+        // --- ZOOM ORTOGONAL (Escala) ---
+
+        // --- A LÓGICA NOVA (com Limites) ---
+        // Primeiro, aplicamos o zoom como antes
+        windowObj.escalonarEixo(fator, fator, fator);
+
+        // Depois, verificamos se não passámos dos limites
+        if (windowObj.camera_zoom < 0.01) { // Limite mínimo de zoom
+            windowObj.camera_zoom = 0.01;
+        }
+        if (windowObj.camera_zoom > 100.0) { // Limite máximo de zoom
+            windowObj.camera_zoom = 100.0;
+        }
+
+    } else {
+        // --- ZOOM EM PERSPECTIVA (Mover em Z) ---
+
+        double dz = (fator > 1.0) ? -10.0 : 10.0; // -10 (In) ou +10 (Out)
+
+        // --- A LÓGICA NOVA (com Limites) ---
+        // 1. Calcula a nova posição Z da câmera
+        double zAtual = windowObj.camera_centro.z();
+        double zNovo = zAtual + dz;
+
+        // 2. Define os limites de segurança
+        // (Não deixa a câmera chegar a menos de 2 unidades dos objetos em z=0)
+        double zMinimo = 2.0;
+        // (Não deixa a câmera afastar-se mais de 1000 unidades)
+        double zMaximo = 1000.0;
+
+        // 3. Aplica a translação APENAS se estiver dentro dos limites
+        if (zNovo >= zMinimo && zNovo <= zMaximo) {
+            windowObj.transladar(0, 0, dz);
+        } else {
+            // Se o zoom ultrapassou o limite, "prende" a câmera no limite
+            if (zNovo < zMinimo) windowObj.camera_centro.setZ(zMinimo);
+            if (zNovo > zMaximo) windowObj.camera_centro.setZ(zMaximo);
+        }
+    }
+
     ui->TelaDesenho->update();
 }

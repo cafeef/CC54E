@@ -17,6 +17,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
@@ -77,6 +78,9 @@ public:
     QLabel *LabelComboBox_11;
     QSpinBox *rotationZSpinBox;
     QPushButton *rotationEixoButton;
+    QLabel *label;
+    QRadioButton *radioOrtogonal;
+    QRadioButton *radioPerspectiva;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -103,7 +107,7 @@ public:
         verticalLayout_11->setContentsMargins(0, 0, 0, 0);
         layoutWidget2 = new QWidget(centralwidget);
         layoutWidget2->setObjectName("layoutWidget2");
-        layoutWidget2->setGeometry(QRect(1080, 110, 312, 347));
+        layoutWidget2->setGeometry(QRect(1140, 120, 312, 414));
         verticalLayout_4 = new QVBoxLayout(layoutWidget2);
         verticalLayout_4->setObjectName("verticalLayout_4");
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
@@ -325,6 +329,23 @@ public:
 
         verticalLayout_3->addWidget(rotationEixoButton);
 
+        label = new QLabel(layoutWidget2);
+        label->setObjectName("label");
+
+        verticalLayout_3->addWidget(label);
+
+        radioOrtogonal = new QRadioButton(layoutWidget2);
+        radioOrtogonal->setObjectName("radioOrtogonal");
+        radioOrtogonal->setChecked(true);
+
+        verticalLayout_3->addWidget(radioOrtogonal);
+
+        radioPerspectiva = new QRadioButton(layoutWidget2);
+        radioPerspectiva->setObjectName("radioPerspectiva");
+        radioPerspectiva->setChecked(false);
+
+        verticalLayout_3->addWidget(radioPerspectiva);
+
 
         verticalLayout_4->addLayout(verticalLayout_3);
 
@@ -341,7 +362,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        LabelComboBox->setText(QCoreApplication::translate("MainWindow", "Escolha o objeto que quer mudar", nullptr));
+        LabelComboBox->setText(QCoreApplication::translate("MainWindow", "Objeto", nullptr));
         LabelComboBox_2->setText(QCoreApplication::translate("MainWindow", "Transla\303\247\303\243o X", nullptr));
         LabelComboBox_3->setText(QCoreApplication::translate("MainWindow", "Transla\303\247\303\243o Y", nullptr));
         LabelComboBox_7->setText(QCoreApplication::translate("MainWindow", "Transla\303\247\303\243o Z", nullptr));
@@ -355,6 +376,9 @@ public:
         LabelComboBox_10->setText(QCoreApplication::translate("MainWindow", "Rotacionar Y", nullptr));
         LabelComboBox_11->setText(QCoreApplication::translate("MainWindow", "Rotacionar Z", nullptr));
         rotationEixoButton->setText(QCoreApplication::translate("MainWindow", "Rotacionar no eixo", nullptr));
+        label->setText(QCoreApplication::translate("MainWindow", "Proje\303\247\303\243o", nullptr));
+        radioOrtogonal->setText(QCoreApplication::translate("MainWindow", "Ortogonal", nullptr));
+        radioPerspectiva->setText(QCoreApplication::translate("MainWindow", "Perspectiva", nullptr));
     } // retranslateUi
 
 };
