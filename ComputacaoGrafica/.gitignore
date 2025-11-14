@@ -73,7 +73,6 @@ CMakeLists.txt.user*
 
 # Directories with generated files
 .moc/
-.obj/
 .pch/
 .rcc/
 .uic/
