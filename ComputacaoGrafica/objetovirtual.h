@@ -22,8 +22,8 @@ public:
     QColor cor;
     TipoObjeto tipo;
 
-    QVector<Ponto> vertices; // ANTES: chamava-se 'pontos'
-    QVector<Face> faces;     // NOVO: para armazenar as faces do 3D
+    QVector<Ponto> vertices;
+    QVector<Face> faces;
 
     // Construtor padrão
     ObjetoVirtual() : cor(Qt::white), tipo(TipoObjeto::Poligono) {}
@@ -45,8 +45,6 @@ public:
     double camera_rotY = 0.0;
     double camera_rotZ = 0.0;
     double camera_zoom = 1.0;
-
-    void camera_rotate(double d_rotX, double d_rotY);
 };
 
 #endif // OBJETOVIRTUAL_H

@@ -46,16 +46,38 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_11"/>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>1140</x>
-      <y>120</y>
-      <width>312</width>
-      <height>414</height>
+      <x>0</x>
+      <y>0</y>
+      <width>2</width>
+      <height>2</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_13"/>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>2</width>
+      <height>2</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_14"/>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>1091</x>
+      <y>21</y>
+      <width>293</width>
+      <height>508</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_6">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -133,7 +155,7 @@
        <item>
         <widget class="QPushButton" name="translateButton">
          <property name="text">
-          <string>Transladar na origem</string>
+          <string>Transladar</string>
          </property>
         </widget>
        </item>
@@ -200,16 +222,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_8">
            <item>
-            <widget class="QPushButton" name="escaleButton">
-             <property name="text">
-              <string>Escalonar na origem</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="escaleEixoButton">
              <property name="text">
-              <string>Escalonar no eixo</string>
+              <string>Escalonar</string>
              </property>
             </widget>
            </item>
@@ -310,11 +325,22 @@
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="rotationEixoButton">
-         <property name="text">
-          <string>Rotacionar no eixo</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="rotationEixoButton">
+           <property name="text">
+            <string>Rotacionar no eixo</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rotateCentroCenaButton">
+           <property name="text">
+            <string>Rotacionar no centro da cena</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="label">
@@ -342,6 +368,89 @@
           <bool>false</bool>
          </property>
         </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="navegacaoLabel">
+         <property name="text">
+          <string>Navegação da Câmera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QPushButton" name="panLeftButton">
+           <property name="text">
+            <string>⬅</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QPushButton" name="panUpButton">
+             <property name="text">
+              <string>⬆</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="panDownButton">
+             <property name="text">
+              <string>⬇</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="panRightButton">
+           <property name="text">
+            <string>➡️</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <widget class="QLabel" name="navegacaoLabel_2">
+             <property name="text">
+              <string>Zoom In</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="zoomInButton">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="navegacaoLabel_3">
+           <property name="text">
+            <string>Zoom Out</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="zoomOutButton">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>

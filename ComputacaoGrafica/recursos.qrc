@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Pokemons/UmbreonLowPoly.obj</file>
-        <file>Pokemons/weedle.obj</file>
         <file>Pokemons/charizard.obj</file>
         <file>Pokemons/pikachu.obj</file>
     </qresource>

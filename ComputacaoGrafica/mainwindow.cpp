@@ -198,10 +198,81 @@ void MainWindow::atualizarComboBoxDeObjetos() {
     }
 }
 
+void MainWindow::on_panUpButton_clicked() {
+    if (indiceDaWindow == -1) return;
+    // Modifica a propriedade camera_centro (Resolve o "deslize")
+    displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() + 10);
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_panDownButton_clicked() {
+    if (indiceDaWindow == -1) return;
+    displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() - 10);
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_panLeftButton_clicked() {
+    if (indiceDaWindow == -1) return;
+    displayFile[indiceDaWindow].camera_centro.setX(displayFile[indiceDaWindow].camera_centro.x() - 10);
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_panRightButton_clicked() {
+    if (indiceDaWindow == -1) return;
+    displayFile[indiceDaWindow].camera_centro.setX(displayFile[indiceDaWindow].camera_centro.x() + 10);
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_zoomInButton_clicked() {
+    if (indiceDaWindow == -1) return;
+
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    if (ui->radioOrtogonal->isChecked()) {
+        // Zoom Ortogonal: Chama escalonarEixo() na câmera
+        windowObj.escalonarEixo(1.1, 1.1, 1.1);
+    } else {
+        // Zoom em Perspectiva: Chama transladar() em Z na câmera
+        // (Com os limites de segurança que implementámos)
+        double zAtual = windowObj.camera_centro.z();
+        double zNovo = zAtual - 10.0; // Mover para a frente
+        double zMinimo = 2.0;
+
+        if (zNovo >= zMinimo) {
+            windowObj.transladar(0, 0, -10.0);
+        } else {
+            windowObj.camera_centro.setZ(zMinimo); // Prende no limite
+        }
+    }
+    ui->TelaDesenho->update();
+}
+
+void MainWindow::on_zoomOutButton_clicked() {
+    if (indiceDaWindow == -1) return;
+
+    ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
+
+    if (ui->radioOrtogonal->isChecked()) {
+        // Zoom Ortogonal: Chama escalonarEixo() na câmera
+        windowObj.escalonarEixo(0.9, 0.9, 0.9);
+    } else {
+        // Zoom em Perspectiva: Chama transladar() em Z na câmera
+        // (Com os limites de segurança)
+        double zAtual = windowObj.camera_centro.z();
+        double zNovo = zAtual + 10.0; // Mover para trás
+        double zMaximo = 1000.0;
+
+        if (zNovo <= zMaximo) {
+            windowObj.transladar(0, 0, 10.0);
+        } else {
+            windowObj.camera_centro.setZ(zMaximo); // Prende no limite
+        }
+    }
+    ui->TelaDesenho->update();
+}
+
 // --- SLOTS DE TRANSFORMAÇÃO DE OBJETO (3D) ---
 // Estes botões transformam o objeto selecionado
-
-// Em mainwindow.cpp
 
 void MainWindow::on_translateButton_clicked() {
     int indice = ui->objectSelectorComboBox->currentIndex();
@@ -220,30 +291,67 @@ void MainWindow::on_translateButton_clicked() {
 void MainWindow::on_rotationEixoButton_clicked()
 {
     int indice = ui->objectSelectorComboBox->currentIndex();
-    if (indice < 0) return; // Nenhum objeto selecionado
+    if (indice == -1) indice = indiceDaWindow; // Se nada estiver selecionado, gira a Câmera
 
-    // 1. Lê os valores de ângulo dos três novos SpinBoxes
+    // 1. Pega os ângulos dos SpinBoxes de objeto (os _1)
     double anguloX = ui->rotationXSpinBox->value();
     double anguloY = ui->rotationYSpinBox->value();
     double anguloZ = ui->rotationZSpinBox->value();
 
-    // 2. Aplica as rotações, uma por uma, se o valor for diferente de zero.
-    //    A ordem importa (normalmente Z, depois Y, depois X),
-    //    mas aplicar sequencialmente assim também funciona.
-
-    if (anguloX != 0.0) {
-        displayFile[indice].rotacionarEixoX(anguloX);
+    if (indice == indiceDaWindow) {
+        // --- LÓGICA DA CÂMERA (Girar no lugar) ---
+        displayFile[indiceDaWindow].camera_rotX += anguloX;
+        displayFile[indiceDaWindow].camera_rotY += anguloY;
+        displayFile[indiceDaWindow].camera_rotZ += anguloZ;
+    } else {
+        // --- LÓGICA DO OBJETO (Girar no próprio eixo) ---
+        // (Chama as funções limpas do objetovirtual.cpp)
+        if (anguloX != 0.0) displayFile[indice].rotacionarEixoX(anguloX);
+        if (anguloY != 0.0) displayFile[indice].rotacionarEixoY(anguloY);
+        if (anguloZ != 0.0) displayFile[indice].rotacionarEixoZ(anguloZ);
     }
 
-    if (anguloY != 0.0) {
-        displayFile[indice].rotacionarEixoY(anguloY);
+    ui->TelaDesenho->update();
+}
+
+/**
+ * Slot para "Rotacionar no Centro da Cena" (Orbitar)
+ * Pokémon: Orbita em torno do "Ponto P".
+ * Câmera: Orbita em torno do "Ponto P".
+ */
+void MainWindow::on_rotateCentroCenaButton_clicked()
+{
+    int indice = ui->objectSelectorComboBox->currentIndex();
+    if (indice == -1) indice = indiceDaWindow; // Se nada estiver selecionado, orbita a Câmera
+
+    // 1. Pega os ângulos dos SpinBoxes de objeto (os _1)
+    double anguloX = ui->rotationXSpinBox->value();
+    double anguloY = ui->rotationYSpinBox->value();
+    double anguloZ = ui->rotationZSpinBox->value();
+
+    // 2. Calcula o "Ponto P"
+    Ponto P = calcularCentroDaCena();
+
+    // 3. Cria a Matriz de Órbita em torno de P
+    Matriz T_ida = Matriz::criarMatrizTranslacao(-P.x(), -P.y(), -P.z());
+    Matriz R_X = Matriz::criarMatrizRotacaoX(anguloX);
+    Matriz R_Y = Matriz::criarMatrizRotacaoY(anguloY);
+    Matriz R_Z = Matriz::criarMatrizRotacaoZ(anguloZ);
+    Matriz T_volta = Matriz::criarMatrizTranslacao(P.x(), P.y(), P.z());
+    Matriz M_orbita = T_volta * R_X * R_Y * R_Z * T_ida;
+
+    if (indice == indiceDaWindow) {
+        // --- LÓGICA DA CÂMERA (Orbitar Ponto P) ---
+        // Transforma a POSIÇÃO da câmera
+        displayFile[indiceDaWindow].camera_centro = M_orbita * displayFile[indiceDaWindow].camera_centro;
+    } else {
+        // --- LÓGICA DO OBJETO (Orbitar Ponto P) ---
+        // Transforma cada VÉRTICE do objeto
+        for (Ponto &v : displayFile[indice].vertices) {
+            v = M_orbita * v;
+        }
     }
 
-    if (anguloZ != 0.0) {
-        displayFile[indice].rotacionarEixoZ(anguloZ);
-    }
-
-    // 4. Atualiza a tela para mostrar a mudança
     ui->TelaDesenho->update();
 }
 
@@ -331,3 +439,31 @@ void MainWindow::lidarComZoom(double fator)
 
     ui->TelaDesenho->update();
 }
+
+Ponto MainWindow::calcularCentroDaCena() const
+{
+    double somaX = 0, somaY = 0, somaZ = 0;
+    int totalVertices = 0;
+
+    // Itera por todos os objetos no displayFile
+    for (int i = 0; i < displayFile.size(); ++i) {
+        // Pula a própria câmera
+        if (i == indiceDaWindow) continue;
+
+        // Soma os vértices de cada objeto
+        for (const Ponto &v : displayFile[i].vertices) {
+            somaX += v.x();
+            somaY += v.y();
+            somaZ += v.z();
+            totalVertices++;
+        }
+    }
+
+    if (totalVertices == 0) {
+        return Ponto(0, 0, 0); // Retorna a origem se a cena estiver vazia
+    }
+
+    // Retorna a média (o seu "Ponto P")
+    return Ponto(somaX / totalVertices, somaY / totalVertices, somaZ / totalVertices);
+}
+

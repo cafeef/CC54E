@@ -17,10 +17,17 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_panUpButton_clicked();
+    void on_panDownButton_clicked();
+    void on_panLeftButton_clicked();
+    void on_panRightButton_clicked();
+    void on_zoomInButton_clicked();
+    void on_zoomOutButton_clicked();
 
     // --- Slots de Transformação de Objeto (agora 3D) ---
     void on_translateButton_clicked();
     void on_rotationEixoButton_clicked();
+    void on_rotateCentroCenaButton_clicked();
     void on_escaleEixoButton_clicked();
     void on_radioOrtogonal_toggled(bool checked);
     void on_radioPerspectiva_toggled(bool checked);
@@ -38,5 +45,7 @@ private:
     void atualizarComboBoxDeObjetos();
 
     void ajustarWindowParaCena();
+
+    Ponto calcularCentroDaCena() const;
 };
 #endif // MAINWINDOW_H
