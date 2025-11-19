@@ -4,7 +4,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
-#include <QTimer> // Para as animações
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,20 +26,15 @@ MainWindow::MainWindow(QWidget *parent)
     indiceDaWindow = displayFile.size() - 1; // Guarda o índice
 
     // --- CARREGAR OS POKÉMONS ---
-    // !!! MUDE ESTES CAMINHOS PARA ONDE VOCÊ GUARDOU OS SEUS FICHEIROS .obj !!!
-    //QString caminhoPokebola = ":/Pokemons/Pokeball_Obj.obj";
-    //QString caminhoPsyduck = ":/Pokemons/psyduck.obj";
     QString caminhoUmbreonLowPoly = ":/Pokemons/UmbreonLowPoly.obj";
     QString caminhoCharizard = ":/Pokemons/charizard.obj";
     QString caminhoPikachu = ":/Pokemons/pikachu.obj";
 
-    //ObjetoVirtual pokebola = carregarObjetoOBJ(caminhoPokebola, "Pokebola", Qt::red);
     ObjetoVirtual umbreonlow = carregarObjetoOBJ(caminhoUmbreonLowPoly, "Umbreon Low", Qt::white);
     ObjetoVirtual pikachu = carregarObjetoOBJ(caminhoPikachu, "Pikachu", Qt::yellow);
     ObjetoVirtual charizard = carregarObjetoOBJ(caminhoCharizard, "Charizard", QColorConstants::Svg::orange);
 
     // --- Posicionar os Pokémons na cena 3D ---
-    // (Ajuste estes valores depois de executar pela primeira vez)
     charizard.escalonarEixo(0.3, 0.3, 0.3);
     charizard.transladar(-5, 0, 0);
     charizard.rotacionarEixoX(90);
@@ -47,11 +42,9 @@ MainWindow::MainWindow(QWidget *parent)
     pikachu.transladar(5, -1, 0);
 
 
-    //displayFile.append(pokebola);
     displayFile.append(umbreonlow);
     displayFile.append(charizard);
     displayFile.append(pikachu);
-    // ------------------------------------
 
     // Conecta o display file à tela
     ui->TelaDesenho->setDisplayFile(&displayFile);
@@ -67,12 +60,11 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-// --- Esta é a sua nova função de "Enquadrar Cena" ---
+// Enquadra a cena
 void MainWindow::ajustarWindowParaCena() {
     if (indiceDaWindow == -1 || displayFile.size() <= 1) return;
 
     // --- Etapa 1: Encontrar o Bounding Box 3D de todos os objetos ---
-    // (O seu código para isto, que já está no seu ficheiro, está perfeito)
     double minX = std::numeric_limits<double>::max(); double minY = minX; double minZ = minX;
     double maxX = std::numeric_limits<double>::lowest(); double maxY = maxX; double maxZ = maxX;
     bool algumPontoEncontrado = false;
@@ -102,7 +94,7 @@ void MainWindow::ajustarWindowParaCena() {
     if (vp_largura < 1 || vp_altura < 1) return;
     double aspect = vp_largura / vp_altura;
 
-    // --- Etapa 4: Calcular o ajuste correto (A LÓGICA NOVA) ---
+    // --- Etapa 4: Calcular o ajuste ---
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
     if (ui->radioOrtogonal->isChecked()) {
@@ -184,7 +176,6 @@ ObjetoVirtual MainWindow::carregarObjetoOBJ(const QString& caminhoArquivo, const
     arquivo.close();
 
     // Copia os vértices para o objeto final
-    // (Alguns .obj definem vértices que não são usados, mas esta é a forma mais simples)
     objeto.vertices = vertices_temp;
 
     qInfo() << "Objeto" << nomeObjeto << "carregado com" << objeto.vertices.size() << "vértices e" << objeto.faces.size() << "faces.";
@@ -198,6 +189,8 @@ void MainWindow::atualizarComboBoxDeObjetos() {
     }
 }
 
+
+// Transformações na Window
 void MainWindow::on_panUpButton_clicked() {
     if (indiceDaWindow == -1) return;
     // Modifica a propriedade camera_centro (Resolve o "deslize")
@@ -233,7 +226,6 @@ void MainWindow::on_zoomInButton_clicked() {
         windowObj.escalonarEixo(1.1, 1.1, 1.1);
     } else {
         // Zoom em Perspectiva: Chama transladar() em Z na câmera
-        // (Com os limites de segurança que implementámos)
         double zAtual = windowObj.camera_centro.z();
         double zNovo = zAtual - 10.0; // Mover para a frente
         double zMinimo = 2.0;
@@ -321,36 +313,33 @@ void MainWindow::on_rotationEixoButton_clicked()
  */
 void MainWindow::on_rotateCentroCenaButton_clicked()
 {
-    int indice = ui->objectSelectorComboBox->currentIndex();
-    if (indice == -1) indice = indiceDaWindow; // Se nada estiver selecionado, orbita a Câmera
+    // A rotação no centro da cena sempre se aplica à CÂMERA (indiceDaWindow)
+    int indice = indiceDaWindow;
 
-    // 1. Pega os ângulos dos SpinBoxes de objeto (os _1)
+    // O botão de rotação no centro da cena deve usar os SpinBoxes de Rotação.
     double anguloX = ui->rotationXSpinBox->value();
     double anguloY = ui->rotationYSpinBox->value();
     double anguloZ = ui->rotationZSpinBox->value();
 
-    // 2. Calcula o "Ponto P"
+    // PIVÔ FIXO: O centro da cena (origem do mundo)
     Ponto P = calcularCentroDaCena();
 
-    // 3. Cria a Matriz de Órbita em torno de P
-    Matriz T_ida = Matriz::criarMatrizTranslacao(-P.x(), -P.y(), -P.z());
-    Matriz R_X = Matriz::criarMatrizRotacaoX(anguloX);
-    Matriz R_Y = Matriz::criarMatrizRotacaoY(anguloY);
-    Matriz R_Z = Matriz::criarMatrizRotacaoZ(anguloZ);
-    Matriz T_volta = Matriz::criarMatrizTranslacao(P.x(), P.y(), P.z());
-    Matriz M_orbita = T_volta * R_X * R_Y * R_Z * T_ida;
+    // Cria a matriz de rotação pura para aplicar à posição
+    // A ordem Z*Y*X é importante para acumular rotações de forma intuitiva
+    Matriz M_orbita = Matriz::criarMatrizRotacaoZ(anguloZ) * Matriz::criarMatrizRotacaoY(anguloY) * Matriz::criarMatrizRotacaoX(anguloX);
 
-    if (indice == indiceDaWindow) {
-        // --- LÓGICA DA CÂMERA (Orbitar Ponto P) ---
-        // Transforma a POSIÇÃO da câmera
-        displayFile[indiceDaWindow].camera_centro = M_orbita * displayFile[indiceDaWindow].camera_centro;
-    } else {
-        // --- LÓGICA DO OBJETO (Orbitar Ponto P) ---
-        // Transforma cada VÉRTICE do objeto
-        for (Ponto &v : displayFile[indice].vertices) {
-            v = M_orbita * v;
-        }
-    }
+    // --- CÂMERA (ORBITAR) ---
+
+    // 1. Orbita a POSIÇÃO da câmera ao redor do centro (0,0,0)
+    // Se a matriz é de rotação pura e o pivô é (0,0,0), não precisamos de T_ida/T_volta
+    displayFile[indice].camera_centro = M_orbita * displayFile[indice].camera_centro;
+
+    // 2. Ajusta a ORIENTAÇÃO da câmera (para manter o objeto no centro da visão)
+    // O ângulo Y (yaw) e X (pitch) devem mudar para a câmera continuar olhando.
+    // O ângulo Z (roll) deve mudar para rotacionar a "window" (janela) em seu próprio eixo.
+    displayFile[indice].camera_rotX += anguloX;
+    displayFile[indice].camera_rotY += anguloY;
+    displayFile[indice].camera_rotZ += anguloZ;
 
     ui->TelaDesenho->update();
 }
@@ -399,11 +388,8 @@ void MainWindow::lidarComZoom(double fator)
     if (ui->radioOrtogonal->isChecked()) {
         // --- ZOOM ORTOGONAL (Escala) ---
 
-        // --- A LÓGICA NOVA (com Limites) ---
-        // Primeiro, aplicamos o zoom como antes
         windowObj.escalonarEixo(fator, fator, fator);
 
-        // Depois, verificamos se não passámos dos limites
         if (windowObj.camera_zoom < 0.01) { // Limite mínimo de zoom
             windowObj.camera_zoom = 0.01;
         }
@@ -416,7 +402,6 @@ void MainWindow::lidarComZoom(double fator)
 
         double dz = (fator > 1.0) ? -10.0 : 10.0; // -10 (In) ou +10 (Out)
 
-        // --- A LÓGICA NOVA (com Limites) ---
         // 1. Calcula a nova posição Z da câmera
         double zAtual = windowObj.camera_centro.z();
         double zNovo = zAtual + dz;

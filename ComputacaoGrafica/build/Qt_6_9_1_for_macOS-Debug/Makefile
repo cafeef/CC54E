@@ -801,7 +801,6 @@ qrc_recursos.cpp: ../../recursos.qrc \
 		/Users/fernanda/Qt/6.9.1/macos/libexec/rcc \
 		../../Pokemons/charizard.obj \
 		../../Pokemons/pikachu.obj \
-		../../Pokemons/weedle.obj \
 		../../Pokemons/UmbreonLowPoly.obj
 	/Users/fernanda/Qt/6.9.1/macos/libexec/rcc -name recursos --no-zstd ../../recursos.qrc -o qrc_recursos.cpp
 
@@ -969,7 +968,9 @@ teladedesenho.o: ../../teladedesenho.cpp ../../teladedesenho.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPainter \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpainter.h \
 		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QPen \
-		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpen.h
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qpen.h \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/QWheelEvent \
+		/Users/fernanda/Qt/6.9.1/macos/lib/QtGui.framework/Headers/qevent.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o teladedesenho.o ../../teladedesenho.cpp
 
 qrc_recursos.o: qrc_recursos.cpp 

@@ -2,8 +2,6 @@
 
 // Translação 3D
 void ObjetoVirtual::transladar(double dx, double dy, double dz) {
-
-    // --- ESTA É A CORREÇÃO ---
     if (this->nome == "#WINDOW_CAMERA") {
         // LÓGICA DA CÂMERA (Pan / Zoom Perspectiva)
         // Modifica as propriedades da câmera
@@ -12,7 +10,6 @@ void ObjetoVirtual::transladar(double dx, double dy, double dz) {
         this->camera_centro.setZ( this->camera_centro.z() + dz );
     } else {
         // LÓGICA DO OBJETO (Pokémon)
-        // (O seu código original de objeto, que está correto)
         Matriz T = Matriz::criarMatrizTranslacao(dx, dy, dz);
         for (Ponto &v : vertices) {
             v = T * v;
@@ -69,7 +66,6 @@ void ObjetoVirtual::rotacionarEixoY(double anguloGraus) {
         this->camera_rotY += anguloGraus;
     } else {
         // LÓGICA DO OBJETO (Pokémon)
-        // (O seu código original de objeto, que está correto)
         Ponto centro = calcularCentro();
         Matriz T_ida = Matriz::criarMatrizTranslacao(-centro.x(), -centro.y(), -centro.z());
         Matriz R = Matriz::criarMatrizRotacaoY(anguloGraus);
@@ -90,7 +86,6 @@ void ObjetoVirtual::rotacionarEixoZ(double anguloGraus) {
         this->camera_rotZ += anguloGraus;
     } else {
         // LÓGICA DO OBJETO (Pokémon)
-        // (O seu código original de objeto, que está correto)
         Ponto centro = calcularCentro();
         Matriz T_ida = Matriz::criarMatrizTranslacao(-centro.x(), -centro.y(), -centro.z());
         Matriz R = Matriz::criarMatrizRotacaoZ(anguloGraus);

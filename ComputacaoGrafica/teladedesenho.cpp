@@ -2,13 +2,11 @@
 #include "teladedesenho.h"
 #include <QPainter>
 #include <QPen>
-#include <cmath>
-#include <algorithm> // Para std::min
 #include <QWheelEvent>
+#include <cmath>
+#include <algorithm>
 
-TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent) {
-    // A câmera agora é gerenciada pela MainWindow
-}
+TelaDeDesenho::TelaDeDesenho(QWidget *parent) : QWidget(parent) {}
 
 void TelaDeDesenho::setDisplayFile(QVector<ObjetoVirtual> *ptr_df) {
     this->displayFile_ptr = ptr_df;
@@ -18,140 +16,118 @@ void TelaDeDesenho::setIndiceDaWindow(int indice) {
     this->indiceDaWindow = indice;
 }
 
-// Implementação do slot
 void TelaDeDesenho::setProjecao(ProjecaoTipo tipo) {
     this->projecaoAtual = tipo;
-    update(); // Redesenha a cena com a nova projeção
+    update();
+}
+
+void TelaDeDesenho::wheelEvent(QWheelEvent *event) {
+    double delta = event->angleDelta().y();
+    double fator = (delta > 0) ? 1.1 : 0.9;
+    emit zoomRequisitado(fator);
+    event->accept();
 }
 
 Matriz TelaDeDesenho::calcularMatrizDeVisualizacao() const {
-    // --- Proteção ---
-    if (!displayFile_ptr || indiceDaWindow == -1 ||
-        indiceDaWindow >= displayFile_ptr->size())
-    {
-        return Matriz::criarIdentidade();
-    }
-
-    // --- Etapa 1: Ler as propriedades da Câmera do Objeto Window ---
-    const ObjetoVirtual& windowObj = (*displayFile_ptr)[indiceDaWindow];
-    const Ponto& cameraPos = windowObj.camera_centro;
-    double zoom = windowObj.camera_zoom;
-    double rotX = windowObj.camera_rotX;
-    double rotY = windowObj.camera_rotY;
-
-    // --- Etapa 2: Definir a Viewport ---
-    double vp_x_min = MARGEM_VIEWPORT;
-    double vp_y_min = MARGEM_VIEWPORT;
-    double vp_largura = this->width() - 2 * MARGEM_VIEWPORT;
-    double vp_altura = this->height() - 2 * MARGEM_VIEWPORT;
-
-    if (vp_largura < 1 || vp_altura < 1) return Matriz::criarIdentidade();
-
-    // --- Etapa 3: Matriz de Viewport (SCN -> Tela) ---
-    // (Esta é a versão CORRIGIDA que evita o "achatamento")
-    double menorDimensaoVP = std::min(vp_largura, vp_altura);
-    Matriz S_vp = Matriz::criarMatrizEscala(menorDimensaoVP / 2.0, -menorDimensaoVP / 2.0, 1.0);
-    Matriz T_vp = Matriz::criarMatrizTranslacao(vp_x_min + vp_largura / 2.0, vp_y_min + vp_altura / 2.0, 0);
-    Matriz M_viewport = T_vp * S_vp;
-
-    // --- Etapa 4: Matriz de Projeção (ORTOGONAL ou PERSPECTIVA) ---
-    Matriz M_proj; // Matriz de projeção
-    double aspect = (vp_altura > 0) ? (vp_largura / vp_altura) : 1.0;
-    double n = 1.0;    // Near plane
-    double f = 1000.0; // Far plane (distância de visualização)
-
-    if (projecaoAtual == ProjecaoTipo::ORTOGONAL) {
-        // --- CÓDIGO DA PROJEÇÃO ORTOGONAL (o que você já tinha) ---
-        double zoom = (*displayFile_ptr)[indiceDaWindow].camera_zoom;
-        double r = (vp_largura / menorDimensaoVP) / zoom;
-        double l = -r;
-        double t = (vp_altura / menorDimensaoVP) / zoom;
-        double b = -t;
-
-        M_proj.dados[0][0] = 2.0 / (r - l);
-        M_proj.dados[1][1] = 2.0 / (t - b);
-        M_proj.dados[2][2] = -2.0 / (f - n);
-        M_proj.dados[3][3] = 1.0;
-        M_proj.dados[0][3] = -(r + l) / (r - l);
-        M_proj.dados[1][3] = -(t + b) / (t - b);
-        M_proj.dados[2][3] = -(f + n) / (f - n);
-
-    } else {
-        // --- CÓDIGO DA PROJEÇÃO EM PERSPECTIVA (NOVO) ---
-        double fov = 60.0; // Campo de visão de 60 graus (um bom padrão)
-        M_proj = Matriz::criarMatrizPerspectiva(fov, aspect, n, f);
-    }
-
-    // --- Etapa 5: Matriz de Câmera (Mundo -> Câmera) ---
-    // (SEM MUDANÇAS - O seu código M_camera continua aqui)
-    Matriz R_cam = Matriz::criarMatrizRotacaoY(-rotY) * Matriz::criarMatrizRotacaoX(-rotX);
-    Matriz T_cam = Matriz::criarMatrizTranslacao(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
-    Matriz M_camera = R_cam * T_cam;
-
-    // --- Etapa Final: Matriz Composta ---
-    return M_viewport * M_proj * M_camera;
+    // Esta função serve apenas para calcular a Projeção e Viewport.
+    // A Matriz de Câmera será calculada separadamente no paintEvent para permitir o Culling.
+    return Matriz::criarIdentidade();
 }
 
-// --- O seu paintEvent() ---
-// (Substitua pela versão com QPainter::setClipRect() da nossa conversa anterior,
-// ela não precisa de mais nenhuma alteração e funcionará perfeitamente com esta nova matriz)
 void TelaDeDesenho::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(this->rect(), Qt::black);
 
-    QRectF viewportRect(MARGEM_VIEWPORT, MARGEM_VIEWPORT,
-                        this->width() - 2 * MARGEM_VIEWPORT,
-                        this->height() - 2 * MARGEM_VIEWPORT);
+    // --- 1. Configurar Viewport (Recorte de Tela) ---
+    double margem = MARGEM_VIEWPORT;
+    QRectF viewportRect(margem, margem,
+                        this->width() - 2 * margem,
+                        this->height() - 2 * margem);
+    painter.setClipRect(viewportRect);
 
-    painter.setClipRect(viewportRect); // Ativa o clipping
+    if (!displayFile_ptr || indiceDaWindow == -1 || indiceDaWindow >= displayFile_ptr->size()) return;
 
-    if (!displayFile_ptr || displayFile_ptr->isEmpty()) return;
+    // --- 2. Ler Propriedades da Câmera ---
+    const ObjetoVirtual& windowObj = (*displayFile_ptr)[indiceDaWindow];
+    const Ponto& cameraPos = windowObj.camera_centro;
+    double zoom = windowObj.camera_zoom;
+    double rotX = windowObj.camera_rotX;
+    double rotY = windowObj.camera_rotY;
+    double rotZ = windowObj.camera_rotZ;
 
-    Matriz M_final = calcularMatrizDeVisualizacao();
+    // --- 3. Construir Matriz de Câmera (VIEW Matrix) ---
+    Matriz R_cam = Matriz::criarMatrizRotacaoZ(-rotZ) * Matriz::criarMatrizRotacaoX(-rotX) * Matriz::criarMatrizRotacaoY(-rotY);
+    Matriz T_cam = Matriz::criarMatrizTranslacao(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
+    Matriz M_view = R_cam * T_cam;
 
+    // --- 4. Construir Matrizes de Projeção e Viewport ---
+    double vp_w = viewportRect.width();
+    double vp_h = viewportRect.height();
+    double aspect = (vp_h > 0) ? (vp_w / vp_h) : 1.0;
+    double n = 1.0;     // Plano Próximo (Near)
+    double f = 2000.0;  // Plano Distante (Far)
+
+    Matriz M_proj;
+    if (projecaoAtual == ProjecaoTipo::ORTOGONAL) {
+        // Ortogonal corrigida
+        double r = (1.0 / zoom) * (vp_w / std::min(vp_w, vp_h));
+        double t = (1.0 / zoom) * (vp_h / std::min(vp_w, vp_h));
+
+        M_proj = Matriz::criarIdentidade();
+        M_proj.dados[0][0] = 1.0 / r;
+        M_proj.dados[1][1] = 1.0 / t;
+        M_proj.dados[2][2] = -2.0 / (f - n);
+        M_proj.dados[2][3] = -(f + n) / (f - n);
+    } else {
+        // Perspectiva
+        M_proj = Matriz::criarMatrizPerspectiva(60.0, aspect, n, f);
+    }
+
+    Matriz M_viewport = Matriz::criarMatrizTranslacao(margem + vp_w/2, margem + vp_h/2, 0) * Matriz::criarMatrizEscala(vp_w/2, -vp_h/2, 1);
+
+    // Matriz Final (sem a Câmera, pois aplicaremos a câmera antes para fazer o Culling)
+    Matriz M_proj_vp = M_viewport * M_proj;
+
+    // --- 5. Desenhar Objetos com Culling ---
     for (const ObjetoVirtual &objeto : *displayFile_ptr) {
-        // NÃO desenha a própria câmera
         if (objeto.nome == "#WINDOW_CAMERA") continue;
 
-        painter.setPen(QPen(objeto.cor, 1));
+        painter.setPen(QPen(objeto.cor, 2));
 
         for (const Face &face : objeto.faces) {
             for (int i = 0; i < face.indicesVertices.size(); ++i) {
-                int indice1 = face.indicesVertices[i];
-                int indice2 = face.indicesVertices[(i + 1) % face.indicesVertices.size()];
+                int idx1 = face.indicesVertices[i];
+                int idx2 = face.indicesVertices[(i + 1) % face.indicesVertices.size()];
 
-                if (indice1 >= objeto.vertices.size() || indice2 >= objeto.vertices.size()) {
-                    continue;
+                if (idx1 >= objeto.vertices.size() || idx2 >= objeto.vertices.size()) continue;
+
+                Ponto v1_mundo = objeto.vertices[idx1];
+                Ponto v2_mundo = objeto.vertices[idx2];
+
+                // A. Transforma para o Espaço da Câmera
+                Ponto v1_view = M_view * v1_mundo;
+                Ponto v2_view = M_view * v2_mundo;
+
+                // B. CULLING
+                // Se o ponto estiver atrás do plano próximo (z > -n), ignoramos.
+                // (Nota: No espaço da câmera, a câmera olha para -Z. Então objetos visíveis têm Z negativo).
+                if (v1_view.z() > -n || v2_view.z() > -n) {
+                    continue; // Ignora esta linha se algum ponto estiver atrás da câmera
                 }
 
-                Ponto v1_mundo = objeto.vertices[indice1];
-                Ponto v2_mundo = objeto.vertices[indice2];
-                Ponto p1_tela = M_final * v1_mundo;
-                Ponto p2_tela = M_final * v2_mundo;
+                // C. Projeta para a Tela
+                Ponto p1_tela = M_proj_vp * v1_view;
+                Ponto p2_tela = M_proj_vp * v2_view;
 
                 painter.drawLine(QPointF(p1_tela.x(), p1_tela.y()), QPointF(p2_tela.x(), p2_tela.y()));
             }
         }
     }
 
+    // Desenha borda
     painter.setClipping(false);
     painter.setPen(QPen(Qt::gray, 1));
     painter.setBrush(Qt::NoBrush);
     painter.drawRect(viewportRect);
-}
-
-void TelaDeDesenho::wheelEvent(QWheelEvent *event)
-{
-    // Verifica para que lado a roda girou
-    double delta = event->angleDelta().y();
-
-    // Define o fator de zoom (1.1 para "para dentro", 0.9 para "para fora")
-    double fator = (delta > 0) ? 1.1 : 0.9;
-
-    // Emite o sinal com o fator de zoom
-    emit zoomRequisitado(fator);
-
-    // Aceita o evento para que ele não seja propagado
-    event->accept();
 }

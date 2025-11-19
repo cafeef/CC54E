@@ -5,10 +5,9 @@
 #include <QString>
 #include <QColor>
 #include <QVector>
-#include "ponto.h" // O nosso novo Ponto 4D
-#include "face.h"  // A nossa nova struct Face
+#include "ponto.h"
+#include "face.h"
 
-// Podemos manter o enum, mas adicionar um tipo para 3D
 enum class TipoObjeto {
     Ponto,
     Reta,
@@ -28,7 +27,7 @@ public:
     // Construtor padrão
     ObjetoVirtual() : cor(Qt::white), tipo(TipoObjeto::Poligono) {}
 
-    // Funções de transformação atualizadas para 3D
+    // Funções de transformação 3D
     void transladar(double dx, double dy, double dz);
     void escalonarEixo(double sx, double sy, double sz);
     void rotacionarEixoX(double anguloGraus);
@@ -39,7 +38,6 @@ public:
     Ponto calcularCentro() const;
 
     // --- Propriedades da Câmera ---
-    // (Usado apenas se nome == "#WINDOW_CAMERA")
     Ponto camera_centro;
     double camera_rotX = 0.0;
     double camera_rotY = 0.0;

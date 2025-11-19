@@ -17,6 +17,7 @@ public:
     ~MainWindow();
 
 private slots:
+    // Transformações da câmera
     void on_panUpButton_clicked();
     void on_panDownButton_clicked();
     void on_panLeftButton_clicked();
@@ -24,7 +25,7 @@ private slots:
     void on_zoomInButton_clicked();
     void on_zoomOutButton_clicked();
 
-    // --- Slots de Transformação de Objeto (agora 3D) ---
+    // --- Slots de Transformação de Objeto em 3D ---
     void on_translateButton_clicked();
     void on_rotationEixoButton_clicked();
     void on_rotateCentroCenaButton_clicked();
@@ -44,8 +45,10 @@ private:
     // Função de ajuda para atualizar a UI
     void atualizarComboBoxDeObjetos();
 
+    // Função para centralizar os objetos na window
     void ajustarWindowParaCena();
 
+    // Calcula o centro da cena
     Ponto calcularCentroDaCena() const;
 };
 #endif // MAINWINDOW_H

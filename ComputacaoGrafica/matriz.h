@@ -4,7 +4,7 @@
 #include <vector>
 #include <QVector>
 
-class Ponto; // Declaração avançada (forward declaration)
+class Ponto;
 
 class Matriz {
 public:
