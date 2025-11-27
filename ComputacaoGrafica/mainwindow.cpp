@@ -193,7 +193,6 @@ void MainWindow::atualizarComboBoxDeObjetos() {
 // Transformações na Window
 void MainWindow::on_panUpButton_clicked() {
     if (indiceDaWindow == -1) return;
-    // Modifica a propriedade camera_centro (Resolve o "deslize")
     displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() + 10);
     ui->TelaDesenho->update();
 }
@@ -222,19 +221,11 @@ void MainWindow::on_zoomInButton_clicked() {
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
     if (ui->radioOrtogonal->isChecked()) {
-        // Zoom Ortogonal: Chama escalonarEixo() na câmera
+        //Zoom ortogonal
         windowObj.escalonarEixo(1.1, 1.1, 1.1);
     } else {
-        // Zoom em Perspectiva: Chama transladar() em Z na câmera
-        double zAtual = windowObj.camera_centro.z();
-        double zNovo = zAtual - 10.0; // Mover para a frente
-        double zMinimo = 2.0;
-
-        if (zNovo >= zMinimo) {
-            windowObj.transladar(0, 0, -10.0);
-        } else {
-            windowObj.camera_centro.setZ(zMinimo); // Prende no limite
-        }
+        // Zoom em perspectiva
+        windowObj.transladar(0, 0, -10.0);
     }
     ui->TelaDesenho->update();
 }
@@ -245,20 +236,11 @@ void MainWindow::on_zoomOutButton_clicked() {
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
 
     if (ui->radioOrtogonal->isChecked()) {
-        // Zoom Ortogonal: Chama escalonarEixo() na câmera
+        //Zoom ortogonal
         windowObj.escalonarEixo(0.9, 0.9, 0.9);
     } else {
-        // Zoom em Perspectiva: Chama transladar() em Z na câmera
-        // (Com os limites de segurança)
-        double zAtual = windowObj.camera_centro.z();
-        double zNovo = zAtual + 10.0; // Mover para trás
-        double zMaximo = 1000.0;
-
-        if (zNovo <= zMaximo) {
-            windowObj.transladar(0, 0, 10.0);
-        } else {
-            windowObj.camera_centro.setZ(zMaximo); // Prende no limite
-        }
+        // Zoom em perspectiva
+        windowObj.transladar(0, 0, 10.0);
     }
     ui->TelaDesenho->update();
 }
