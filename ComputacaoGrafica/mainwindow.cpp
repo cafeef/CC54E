@@ -313,34 +313,42 @@ void MainWindow::on_rotationEixoButton_clicked()
  */
 void MainWindow::on_rotateCentroCenaButton_clicked()
 {
-    // A rotação no centro da cena sempre se aplica à CÂMERA (indiceDaWindow)
-    int indice = indiceDaWindow;
+    // 1. Obtém o índice do item atualmente selecionado no ComboBox
+    int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
 
-    // O botão de rotação no centro da cena deve usar os SpinBoxes de Rotação.
+    // 2. Lê os ângulos dos SpinBoxes
     double anguloX = ui->rotationXSpinBox->value();
     double anguloY = ui->rotationYSpinBox->value();
     double anguloZ = ui->rotationZSpinBox->value();
 
-    // PIVÔ FIXO: O centro da cena (origem do mundo)
-    Ponto P = calcularCentroDaCena();
-
-    // Cria a matriz de rotação pura para aplicar à posição
-    // A ordem Z*Y*X é importante para acumular rotações de forma intuitiva
+    // Cria a Matriz de Rotação (a mesma para os dois casos, pois o pivô é (0,0,0))
+    // A ordem de multiplicação é importante: Z * Y * X
     Matriz M_orbita = Matriz::criarMatrizRotacaoZ(anguloZ) * Matriz::criarMatrizRotacaoY(anguloY) * Matriz::criarMatrizRotacaoX(anguloX);
 
-    // --- CÂMERA (ORBITAR) ---
+    // --- LÓGICA CONDICIONAL ---
 
-    // 1. Orbita a POSIÇÃO da câmera ao redor do centro (0,0,0)
-    // Se a matriz é de rotação pura e o pivô é (0,0,0), não precisamos de T_ida/T_volta
-    displayFile[indice].camera_centro = M_orbita * displayFile[indice].camera_centro;
+    if (indiceSelecionado == indiceDaWindow) {
+        // --- CASO 1: CÂMERA SELECIONADA (Navegação Orbit) ---
 
-    // 2. Ajusta a ORIENTAÇÃO da câmera (para manter o objeto no centro da visão)
-    // O ângulo Y (yaw) e X (pitch) devem mudar para a câmera continuar olhando.
-    // O ângulo Z (roll) deve mudar para rotacionar a "window" (janela) em seu próprio eixo.
-    displayFile[indice].camera_rotX += anguloX;
-    displayFile[indice].camera_rotY += anguloY;
-    displayFile[indice].camera_rotZ += anguloZ;
+        // Orbita a POSIÇÃO da câmera ao redor do centro do mundo (0, 0, 0)
+        displayFile[indiceSelecionado].camera_centro = M_orbita * displayFile[indiceSelecionado].camera_centro;
 
+        // Acumula apenas o Roll (Z) para inclinar o plano da tela
+        displayFile[indiceSelecionado].camera_rotZ += anguloZ;
+
+        // Os ângulos X e Y da câmera são determinados pela sua nova posição em relação
+        // à origem, e não precisam ser acumulados, evitando o deslize.
+
+    } else if (indiceSelecionado >= 0) {
+        // --- CASO 2: OBJETO SELECIONADO (Transformação no Centro do Mundo) ---
+
+        // Aplica a rotação do mundo diretamente aos vértices do objeto selecionado.
+        for (Ponto &v : displayFile[indiceSelecionado].vertices) {
+            v = M_orbita * v;
+        }
+    }
+
+    // Atualiza a tela para mostrar a mudança
     ui->TelaDesenho->update();
 }
 
