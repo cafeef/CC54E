@@ -193,145 +193,182 @@ void MainWindow::atualizarComboBoxDeObjetos() {
 // Transformações na Window
 void MainWindow::on_panUpButton_clicked() {
     if (indiceDaWindow == -1) return;
-    displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() + 10);
-    ui->TelaDesenho->update();
+    for (int var = 0; var < 10; ++var) {
+        displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() + 0.1);
+        ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
+    }
 }
 
 void MainWindow::on_panDownButton_clicked() {
     if (indiceDaWindow == -1) return;
-    displayFile[indiceDaWindow].camera_centro.setY(displayFile[indiceDaWindow].camera_centro.y() - 10);
-    ui->TelaDesenho->update();
+    for (int var = 0; var < 10; ++var) {
+        displayFile[indiceDaWindow].camera_centro.setY(
+            displayFile[indiceDaWindow].camera_centro.y() - 0.1);
+        ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit())); // 5 ms
+        loop.exec();
+    }
 }
+
 
 void MainWindow::on_panLeftButton_clicked() {
     if (indiceDaWindow == -1) return;
-    displayFile[indiceDaWindow].camera_centro.setX(displayFile[indiceDaWindow].camera_centro.x() - 10);
-    ui->TelaDesenho->update();
+
+    for (int var = 0; var < 10; ++var) {
+        displayFile[indiceDaWindow].camera_centro.setX(
+            displayFile[indiceDaWindow].camera_centro.x() - 0.1);
+        ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit())); // 5 ms
+        loop.exec();
+    }
 }
+
 
 void MainWindow::on_panRightButton_clicked() {
     if (indiceDaWindow == -1) return;
-    displayFile[indiceDaWindow].camera_centro.setX(displayFile[indiceDaWindow].camera_centro.x() + 10);
-    ui->TelaDesenho->update();
+    for (int var = 0; var < 10; ++var) {
+        displayFile[indiceDaWindow].camera_centro.setX(
+            displayFile[indiceDaWindow].camera_centro.x() + 0.1);
+        ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit())); // 5 ms
+        loop.exec();
+    }
 }
 
 void MainWindow::on_zoomInButton_clicked() {
     if (indiceDaWindow == -1) return;
-
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
-
-    if (ui->radioOrtogonal->isChecked()) {
-        //Zoom ortogonal
-        windowObj.escalonarEixo(1.1, 1.1, 1.1);
-    } else {
-        // Zoom em perspectiva
-        windowObj.transladar(0, 0, -10.0);
+    for (int i = 0; i < 10; i++) {
+        if (ui->radioOrtogonal->isChecked()) {
+            // Zoom ortogonal suave
+            windowObj.escalonarEixo(1.01, 1.01, 1.01);  // pequeno incremento
+        } else {
+            // Zoom de perspectiva suave
+            windowObj.transladar(0, 0, -1.0);  // 10 passos de -1 = total -10
+        } ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit())); // atraso suave
+        loop.exec();
     }
-    ui->TelaDesenho->update();
 }
 
 void MainWindow::on_zoomOutButton_clicked() {
     if (indiceDaWindow == -1) return;
-
     ObjetoVirtual &windowObj = displayFile[indiceDaWindow];
-
-    if (ui->radioOrtogonal->isChecked()) {
-        //Zoom ortogonal
-        windowObj.escalonarEixo(0.9, 0.9, 0.9);
-    } else {
-        // Zoom em perspectiva
-        windowObj.transladar(0, 0, 10.0);
+    for (int i = 0; i < 10; i++) {
+        if (ui->radioOrtogonal->isChecked()) {
+            // Zoom ortogonal suave
+            windowObj.escalonarEixo(0.99, 0.99, 0.99);  // pequeno decremento
+        } else {
+            // Zoom de perspectiva suave
+            windowObj.transladar(0, 0, 1.0);  // 10 passos de +1 = total +10
+        } ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
     }
-    ui->TelaDesenho->update();
 }
 
 // --- SLOTS DE TRANSFORMAÇÃO DE OBJETO (3D) ---
 // Estes botões transformam o objeto selecionado
-
 void MainWindow::on_translateButton_clicked() {
     int indice = ui->objectSelectorComboBox->currentIndex();
     if (indice < 0) return;
-
     double dx = ui->translateXSpinBox->value();
     double dy = ui->translateYSpinBox->value();
-
-    // Lê o valor do novo SpinBox para Z
     double dz = ui->translateZSpinBox->value();
+    // Dividir em passos para animação
+    double stepX = dx / 10.0;
+    double stepY = dy / 10.0;
+    double stepZ = dz / 10.0;
+    for (int i = 0; i < 10; i++) {
+        displayFile[indice].transladar(stepX, stepY, stepZ);
+        ui->TelaDesenho->update();
 
-    displayFile[indice].transladar(dx, dy, dz);
-    ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
+    }
 }
 
-void MainWindow::on_rotationEixoButton_clicked()
-{
+void MainWindow::on_rotationEixoButton_clicked() {
     int indice = ui->objectSelectorComboBox->currentIndex();
-    if (indice == -1) indice = indiceDaWindow; // Se nada estiver selecionado, gira a Câmera
+    if (indice == -1) indice = indiceDaWindow;
 
-    // 1. Pega os ângulos dos SpinBoxes de objeto (os _1)
     double anguloX = ui->rotationXSpinBox->value();
     double anguloY = ui->rotationYSpinBox->value();
     double anguloZ = ui->rotationZSpinBox->value();
 
-    if (indice == indiceDaWindow) {
-        // --- LÓGICA DA CÂMERA (Girar no lugar) ---
-        displayFile[indiceDaWindow].camera_rotX += anguloX;
-        displayFile[indiceDaWindow].camera_rotY += anguloY;
-        displayFile[indiceDaWindow].camera_rotZ += anguloZ;
-    } else {
-        // --- LÓGICA DO OBJETO (Girar no próprio eixo) ---
-        // (Chama as funções limpas do objetovirtual.cpp)
-        if (anguloX != 0.0) displayFile[indice].rotacionarEixoX(anguloX);
-        if (anguloY != 0.0) displayFile[indice].rotacionarEixoY(anguloY);
-        if (anguloZ != 0.0) displayFile[indice].rotacionarEixoZ(anguloZ);
+    double stepX = anguloX / 10.0;
+    double stepY = anguloY / 10.0;
+    double stepZ = anguloZ / 10.0;
+    for (int i = 0; i < 10; i++) {
+        if (indice == indiceDaWindow) {
+            // --- câmera ---
+            displayFile[indiceDaWindow].camera_rotX += stepX;
+            displayFile[indiceDaWindow].camera_rotY += stepY;
+            displayFile[indiceDaWindow].camera_rotZ += stepZ;
+        } else {
+            // --- objeto ---
+            if (stepX != 0.0) displayFile[indice].rotacionarEixoX(stepX);
+            if (stepY != 0.0) displayFile[indice].rotacionarEixoY(stepY);
+            if (stepZ != 0.0) displayFile[indice].rotacionarEixoZ(stepZ);
+        }
+        ui->TelaDesenho->update();
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
     }
-
-    ui->TelaDesenho->update();
 }
+
 
 /**
  * Slot para "Rotacionar no Centro da Cena" (Orbitar)
  * Pokémon: Orbita em torno do "Ponto P".
  * Câmera: Orbita em torno do "Ponto P".
  */
-void MainWindow::on_rotateCentroCenaButton_clicked()
-{
-    // 1. Obtém o índice do item atualmente selecionado no ComboBox
+void MainWindow::on_rotateCentroCenaButton_clicked() {
     int indiceSelecionado = ui->objectSelectorComboBox->currentIndex();
 
-    // 2. Lê os ângulos dos SpinBoxes
     double anguloX = ui->rotationXSpinBox->value();
     double anguloY = ui->rotationYSpinBox->value();
     double anguloZ = ui->rotationZSpinBox->value();
 
-    // Cria a Matriz de Rotação (a mesma para os dois casos, pois o pivô é (0,0,0))
-    // A ordem de multiplicação é importante: Z * Y * X
-    Matriz M_orbita = Matriz::criarMatrizRotacaoZ(anguloZ) * Matriz::criarMatrizRotacaoY(anguloY) * Matriz::criarMatrizRotacaoX(anguloX);
+    double stepX = anguloX / 10.0;
+    double stepY = anguloY / 10.0;
+    double stepZ = anguloZ / 10.0;
 
-    // --- LÓGICA CONDICIONAL ---
+    for (int i = 0; i < 10; i++) {
 
-    if (indiceSelecionado == indiceDaWindow) {
-        // --- CASO 1: CÂMERA SELECIONADA (Navegação Orbit) ---
+        // matriz incremental
+        Matriz M_orbita =
+            Matriz::criarMatrizRotacaoZ(stepZ) *
+            Matriz::criarMatrizRotacaoY(stepY) *
+            Matriz::criarMatrizRotacaoX(stepX);
 
-        // Orbita a POSIÇÃO da câmera ao redor do centro do mundo (0, 0, 0)
-        displayFile[indiceSelecionado].camera_centro = M_orbita * displayFile[indiceSelecionado].camera_centro;
-
-        // Acumula apenas o Roll (Z) para inclinar o plano da tela
-        displayFile[indiceSelecionado].camera_rotZ += anguloZ;
-
-        // Os ângulos X e Y da câmera são determinados pela sua nova posição em relação
-        // à origem, e não precisam ser acumulados, evitando o deslize.
-
-    } else if (indiceSelecionado >= 0) {
-        // --- CASO 2: OBJETO SELECIONADO (Transformação no Centro do Mundo) ---
-
-        // Aplica a rotação do mundo diretamente aos vértices do objeto selecionado.
-        for (Ponto &v : displayFile[indiceSelecionado].vertices) {
-            v = M_orbita * v;
+        if (indiceSelecionado == indiceDaWindow) {
+            // --- câmera ---
+            displayFile[indiceDaWindow].camera_centro = M_orbita * displayFile[indiceDaWindow].camera_centro;
+            displayFile[indiceDaWindow].camera_rotZ += stepZ;
+        } else if (indiceSelecionado >= 0) {
+            // --- objeto ---
+            for (Ponto &v : displayFile[indiceSelecionado].vertices) {
+                v = M_orbita * v;
+            }
         }
-    }
 
-    // Atualiza a tela para mostrar a mudança
-    ui->TelaDesenho->update();
+        ui->TelaDesenho->update();
+
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
+    }
 }
 
 void MainWindow::on_escaleEixoButton_clicked() {
@@ -340,18 +377,27 @@ void MainWindow::on_escaleEixoButton_clicked() {
 
     double sx = ui->escaleXSpinBox->value();
     double sy = ui->escaleYSpinBox->value();
-
-    // Lê o valor do novo SpinBox para Z
     double sz = ui->escaleZSpinBox->value();
 
-    // Proteção contra escala 0
     if (sx == 0) sx = 1.0;
     if (sy == 0) sy = 1.0;
     if (sz == 0) sz = 1.0;
 
-    displayFile[indice].escalonarEixo(sx, sy, sz);
-    ui->TelaDesenho->update();
+    // calcular raiz para que sx^10 = escala final
+    double stepX = std::pow(sx, 1.0 / 10.0);
+    double stepY = std::pow(sy, 1.0 / 10.0);
+    double stepZ = std::pow(sz, 1.0 / 10.0);
+
+    for (int i = 0; i < 10; i++) {
+        displayFile[indice].escalonarEixo(stepX, stepY, stepZ);
+        ui->TelaDesenho->update();
+
+        QEventLoop loop;
+        QTimer::singleShot(5, &loop, SLOT(quit()));
+        loop.exec();
+    }
 }
+
 
 void MainWindow::on_radioOrtogonal_toggled(bool checked)
 {
